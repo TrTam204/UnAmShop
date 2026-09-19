@@ -181,9 +181,8 @@ const PlatformServices = () => {
 
   const fetchServices = async () => {
     try {
-      const response = await servicesAPI.getAll({ 
-        status: 'active',
-        category: config.name 
+      const response = await servicesAPI.getCatalog({
+        platformSlug: platform?.toLowerCase(),
       });
       setServices(response.data.data || []);
     } catch (error) {

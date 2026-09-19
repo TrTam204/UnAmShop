@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { supabase } from '../lib/supabase';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -58,8 +59,66 @@ export const authAPI = {
 };
 
 // Services API
+const mapCatalogService = (service) => ({
+  _id: service.id,
+  title: service.name,
+  description: service.description || '',
+  rate: Number(service.selling_rate_vnd),
+  pricePerUnit: Number(service.selling_rate_vnd),
+  min: service.min_quantity,
+  max: service.max_quantity,
+  minQuantity: service.min_quantity,
+  maxQuantity: service.max_quantity,
+  supportsRefill: service.supports_refill,
+  supportsCancel: service.supports_cancel,
+  category: service.category_name,
+  categorySlug: service.category_slug,
+  platform: service.platform_name,
+  platformSlug: service.platform_slug,
+});
+
+const getCatalogResponse = async (params = {}) => {
+  const { data, error } = await supabase.rpc('get_service_catalog', {
+    p_platform_slug: params.platformSlug || null,
+    p_category_slug: params.categorySlug || null,
+    p_search: params.search || null,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  const services = (data || []).map(mapCatalogService);
+  const grouped = services.reduce((groups, service) => {
+    if (!groups[service.category]) {
+      groups[service.category] = [];
+    }
+    groups[service.category].push(service);
+    return groups;
+  }, {});
+
+  return {
+    data: {
+      success: true,
+      count: services.length,
+      data: services,
+      grouped,
+    },
+  };
+};
+
 export const servicesAPI = {
   getAll: (params) => api.get('/services', { params }),
+  getCatalog: getCatalogResponse,
+  getCatalogCategories: async () => {
+    const response = await getCatalogResponse();
+    return {
+      data: {
+        success: true,
+        data: Object.keys(response.data.grouped),
+      },
+    };
+  },
   getById: (id) => api.get(`/services/${id}`),
   getCategories: () => api.get('/services/categories'),
   create: (data) => api.post('/services', data),

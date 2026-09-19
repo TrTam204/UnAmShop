@@ -24,8 +24,8 @@ const PublicServices = () => {
   const fetchServices = async () => {
     try {
       const [servicesRes, categoriesRes] = await Promise.all([
-        servicesAPI.getAll({ status: 'active' }),
-        servicesAPI.getCategories(),
+        servicesAPI.getCatalog(),
+        servicesAPI.getCatalogCategories(),
       ]);
       setServices(servicesRes.data.data || []);
       setCategories(categoriesRes.data.data || []);

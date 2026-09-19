@@ -16,7 +16,7 @@ const Services = () => {
 
   const fetchServices = async () => {
     try {
-      const response = await servicesAPI.getAll();
+      const response = await servicesAPI.getCatalog();
       setServices(response.data.data);
       setGroupedServices(response.data.grouped);
     } catch (error) {
