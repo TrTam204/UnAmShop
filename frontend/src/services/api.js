@@ -134,6 +134,35 @@ export const ordersAPI = {
   getAllAdmin: (params) => api.get('/orders/admin/all', { params }),
   getStats: () => api.get('/orders/admin/stats'),
   updateStatus: (id, status) => api.put(`/orders/${id}/status`, { status }),
+  createSupabaseOrder: async ({ serviceId, link, quantity, idempotencyKey }) => {
+    await requireSupabaseSession();
+    const { data, error } = await supabase.rpc('create_order', {
+      p_service_id: serviceId,
+      p_link: link,
+      p_quantity: quantity,
+      p_idempotency_key: idempotencyKey || globalThis.crypto.randomUUID(),
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  },
+  refundSupabaseOrder: async ({ orderId, amountVnd, operationKey }) => {
+    await requireSupabaseSession();
+    const { data, error } = await supabase.rpc('refund_order', {
+      p_order_id: orderId,
+      p_amount_vnd: amountVnd,
+      p_operation_key: operationKey || globalThis.crypto.randomUUID(),
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  },
 };
 
 // Wallet API
