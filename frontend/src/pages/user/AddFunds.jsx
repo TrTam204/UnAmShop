@@ -1,210 +1,320 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { walletAPI } from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
-import { Card, Button, Input, Table, Badge, Pagination, PageLoader } from '../../components/ui';
+import { Card, Button, Input, Table, Badge, PageLoader } from '../../components/ui';
 import toast from 'react-hot-toast';
 
+const paymentMethods = [
+  {
+    id: 'vietqr',
+    title: 'VietQR / Bank Transfer',
+    description: 'Create a pending request, then transfer the exact amount using the displayed reference.',
+  },
+  {
+    id: 'zalo',
+    title: 'Contact Admin via Zalo',
+    description: 'Create a request, then contact admin so the payment can be confirmed manually.',
+  },
+];
+
+const statusVariants = {
+  pending: 'warning',
+  approved: 'success',
+  rejected: 'danger',
+  cancelled: 'default',
+};
+
+const formatVnd = (value) => `${Number(value || 0).toLocaleString('vi-VN')} VND`;
+
 const AddFunds = () => {
-  const { user, updateUser } = useAuth();
   const [amount, setAmount] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [historyLoading, setHistoryLoading] = useState(true);
-  const [transactions, setTransactions] = useState([]);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    pages: 1,
-    total: 0,
-  });
+  const [paymentMethod, setPaymentMethod] = useState('vietqr');
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [cancellingId, setCancellingId] = useState(null);
+  const [wallet, setWallet] = useState({ balance: 0, transactions: [], deposits: [] });
+  const [authBoundary, setAuthBoundary] = useState(false);
+  const [createdDeposit, setCreatedDeposit] = useState(null);
 
-  const quickAmounts = [100, 500, 1000, 2000, 5000];
-
-  useEffect(() => {
-    fetchTransactionHistory();
-  }, [pagination.page]);
-
-  const fetchTransactionHistory = async () => {
-    setHistoryLoading(true);
-    try {
-      const response = await walletAPI.getHistory({
-        page: pagination.page,
-        limit: 10,
-      });
-      setTransactions(response.data.data);
-      setPagination({
-        page: response.data.page,
-        pages: response.data.pages,
-        total: response.data.total,
-      });
-    } catch (error) {
-      console.error('Error fetching transactions:', error);
-    } finally {
-      setHistoryLoading(false);
-    }
+  const vietQrConfig = {
+    bankId: import.meta.env.VITE_VIETQR_BANK_ID,
+    accountNumber: import.meta.env.VITE_VIETQR_ACCOUNT_NUMBER,
+    accountName: import.meta.env.VITE_VIETQR_ACCOUNT_NAME,
+    template: import.meta.env.VITE_VIETQR_TEMPLATE || 'compact2',
   };
+  const zaloContactUrl = import.meta.env.VITE_ZALO_CONTACT_URL;
 
-  const handlePayment = async () => {
-    const amountNum = parseFloat(amount);
-    if (!amountNum || amountNum < 10) {
-      toast.error('Minimum amount is ₹10');
-      return;
+  const qrUrl = useMemo(() => {
+    if (
+      !createdDeposit ||
+      createdDeposit.payment_method !== 'vietqr' ||
+      !vietQrConfig.bankId ||
+      !vietQrConfig.accountNumber
+    ) {
+      return null;
     }
 
+    const reference = createdDeposit.payment_reference || createdDeposit.id;
+    const query = new URLSearchParams({
+      amount: String(createdDeposit.amount_vnd),
+      addInfo: reference,
+    });
+
+    if (vietQrConfig.accountName) {
+      query.set('accountName', vietQrConfig.accountName);
+    }
+
+    return `https://img.vietqr.io/image/${vietQrConfig.bankId}-${vietQrConfig.accountNumber}-${vietQrConfig.template}.png?${query.toString()}`;
+  }, [createdDeposit, vietQrConfig.accountName, vietQrConfig.accountNumber, vietQrConfig.bankId, vietQrConfig.template]);
+
+  const loadWallet = async () => {
     setLoading(true);
-
     try {
-      const response = await walletAPI.createPaymentOrder(amountNum);
-      const { orderId, keyId } = response.data.data;
-
-      const options = {
-        key: keyId,
-        amount: amountNum * 100,
-        currency: 'INR',
-        name: 'SMM Panel',
-        description: 'Wallet Recharge',
-        order_id: orderId,
-        handler: async function (response) {
-          try {
-            const verifyResponse = await walletAPI.verifyPayment({
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-            });
-
-            updateUser({ walletBalance: verifyResponse.data.data.newBalance });
-            toast.success('Payment successful!');
-            setAmount('');
-            fetchTransactionHistory();
-          } catch (error) {
-            toast.error('Payment verification failed');
-          }
-        },
-        prefill: {
-          name: user?.name,
-          email: user?.email,
-        },
-        theme: {
-          color: '#2563eb',
-        },
-      };
-
-      const razorpay = new window.Razorpay(options);
-      razorpay.open();
+      const snapshot = await walletAPI.getSupabaseSnapshot();
+      setWallet(snapshot);
+      setAuthBoundary(false);
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Failed to initiate payment');
+      if (error.code === 'SUPABASE_AUTH_REQUIRED') {
+        setAuthBoundary(true);
+      } else {
+        toast.error('Failed to load wallet data');
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const columns = [
+  useEffect(() => {
+    loadWallet();
+  }, []);
+
+  const handleCreateRequest = async () => {
+    const amountVnd = Number(amount);
+    if (!Number.isInteger(amountVnd) || amountVnd <= 0) {
+      toast.error('Enter a positive whole VND amount');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const deposit = await walletAPI.createDepositRequest(amountVnd, paymentMethod);
+      setCreatedDeposit(deposit);
+      setAmount('');
+      await loadWallet();
+      toast.success('Deposit request created');
+    } catch (error) {
+      if (error.code === 'SUPABASE_AUTH_REQUIRED') {
+        setAuthBoundary(true);
+      } else {
+        toast.error(error.message || 'Failed to create deposit request');
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleCancel = async (depositId) => {
+    setCancellingId(depositId);
+    try {
+      await walletAPI.cancelDepositRequest(depositId);
+      if (createdDeposit?.id === depositId) {
+        setCreatedDeposit(null);
+      }
+      await loadWallet();
+      toast.success('Deposit request cancelled');
+    } catch (error) {
+      toast.error(error.message || 'Failed to cancel deposit request');
+    } finally {
+      setCancellingId(null);
+    }
+  };
+
+  const copyReference = async (reference) => {
+    await navigator.clipboard.writeText(reference);
+    toast.success('Transfer reference copied');
+  };
+
+  const transactionColumns = [
     {
-      key: 'type',
+      key: 'direction',
       title: 'Type',
-      render: (type) => (
-        <Badge variant={type === 'credit' ? 'success' : 'danger'}>
-          {type === 'credit' ? 'Credit' : 'Debit'}
+      render: (direction) => (
+        <Badge variant={direction === 'credit' ? 'success' : 'danger'}>
+          {direction === 'credit' ? 'Credit' : 'Debit'}
         </Badge>
       ),
     },
-    {
-      key: 'amount',
-      title: 'Amount',
-      render: (amount, row) => (
-        <span className={row.type === 'credit' ? 'text-green-600' : 'text-red-600'}>
-          {row.type === 'credit' ? '+' : '-'}₹{amount.toFixed(2)}
-        </span>
-      ),
-    },
+    { key: 'amount_vnd', title: 'Amount', render: (value) => formatVnd(value) },
     { key: 'description', title: 'Description' },
-    {
-      key: 'balanceAfter',
-      title: 'Balance After',
-      render: (balance) => `₹${balance.toFixed(2)}`,
-    },
-    {
-      key: 'createdAt',
-      title: 'Date',
-      render: (date) => new Date(date).toLocaleString(),
-    },
+    { key: 'balance_after_vnd', title: 'Balance After', render: (value) => formatVnd(value) },
+    { key: 'created_at', title: 'Date', render: (value) => new Date(value).toLocaleString() },
   ];
 
   return (
     <div className="fade-in">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Add Funds</h1>
-        <p className="text-gray-500 mt-1">Add money to your wallet</p>
+        <p className="text-gray-500 mt-1">Deposit VND by VietQR or contact admin via Zalo.</p>
       </div>
 
+      {authBoundary && (
+        <Card className="mb-6">
+          <p className="font-semibold text-gray-900">Supabase Auth is required for wallet deposits.</p>
+          <p className="text-sm text-gray-600 mt-1">
+            The current app login still uses the legacy Express session. Deposits remain disabled until the Supabase Auth cutover is enabled; no anonymous wallet path is used.
+          </p>
+        </Card>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Add Funds Card */}
-        <div className="lg:col-span-1">
-          <Card title="Add Funds">
-            {/* Current Balance */}
-            <div className="bg-primary-50 rounded-lg p-4 mb-6">
-              <p className="text-sm text-gray-600">Current Balance</p>
-              <p className="text-3xl font-bold text-primary-600">
-                ₹{user?.walletBalance?.toFixed(2) || '0.00'}
-              </p>
-            </div>
+        <div className="lg:col-span-1 space-y-6">
+          <Card title="Current Balance">
+            <p className="text-3xl font-bold text-primary-600">
+              {authBoundary ? 'Unavailable' : formatVnd(wallet.balance)}
+            </p>
+          </Card>
 
-            {/* Amount Input */}
-            <Input
-              label="Amount (₹)"
-              type="number"
-              placeholder="Enter amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              min="10"
-            />
-
-            {/* Quick Amounts */}
-            <div className="flex flex-wrap gap-2 mt-4">
-              {quickAmounts.map((amt) => (
+          <Card title="Deposit Method">
+            <div className="space-y-3">
+              {paymentMethods.map((method) => (
                 <button
-                  key={amt}
-                  onClick={() => setAmount(amt.toString())}
-                  className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  key={method.id}
+                  type="button"
+                  onClick={() => setPaymentMethod(method.id)}
+                  className={`w-full text-left rounded-lg border p-4 transition-colors ${
+                    paymentMethod === method.id
+                      ? 'border-primary-600 bg-primary-50'
+                      : 'border-gray-200 hover:border-primary-300'
+                  }`}
                 >
-                  ₹{amt}
+                  <p className="font-semibold text-gray-900">{method.title}</p>
+                  <p className="text-sm text-gray-500 mt-1">{method.description}</p>
                 </button>
               ))}
             </div>
 
-            {/* Pay Button */}
+            <Input
+              label="Amount (VND)"
+              type="number"
+              min="1"
+              step="1"
+              placeholder="Enter amount"
+              value={amount}
+              onChange={(event) => setAmount(event.target.value)}
+              className="mt-5"
+              disabled={authBoundary}
+            />
+
             <Button
-              onClick={handlePayment}
-              loading={loading}
-              className="w-full mt-6"
+              onClick={handleCreateRequest}
+              loading={submitting}
+              disabled={authBoundary}
+              className="w-full mt-5"
               size="lg"
             >
-              Pay with Razorpay
+              Create Deposit Request
             </Button>
-
-            <p className="text-xs text-gray-500 text-center mt-4">
-              Minimum amount: ₹10
-            </p>
           </Card>
         </div>
 
-        {/* Transaction History */}
-        <div className="lg:col-span-2">
-          <Card title="Transaction History">
-            {historyLoading ? (
+        <div className="lg:col-span-2 space-y-6">
+          {createdDeposit && (
+            <Card title="Deposit Instructions">
+              <div className="space-y-4">
+                <p className="text-sm text-gray-600">
+                  Request status: <Badge variant={statusVariants[createdDeposit.status] || 'default'}>{createdDeposit.status}</Badge>
+                </p>
+                <p className="font-semibold">Amount: {formatVnd(createdDeposit.amount_vnd)}</p>
+
+                {createdDeposit.payment_method === 'vietqr' ? (
+                  <div className="flex flex-col sm:flex-row gap-5 items-start">
+                    {qrUrl ? (
+                      <img src={qrUrl} alt="VietQR payment QR code" className="w-56 h-56 border rounded-lg" />
+                    ) : (
+                      <p className="text-sm text-amber-700 bg-amber-50 rounded-lg p-4">
+                        VietQR destination is not configured for this deployment.
+                      </p>
+                    )}
+                    <div className="space-y-2 text-sm">
+                      <p>Transfer the exact amount to the configured bank destination.</p>
+                      <p>Reference: <strong>{createdDeposit.payment_reference || createdDeposit.id}</strong></p>
+                      <Button
+                        variant="secondary"
+                        onClick={() => copyReference(createdDeposit.payment_reference || createdDeposit.id)}
+                      >
+                        Copy Reference
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <p className="text-sm text-gray-600">Contact admin via Zalo and include this request ID:</p>
+                    <p className="font-mono text-sm break-all">{createdDeposit.id}</p>
+                    {zaloContactUrl ? (
+                      <a
+                        href={zaloContactUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                      >
+                        Contact Admin via Zalo
+                      </a>
+                    ) : (
+                      <p className="text-sm text-amber-700 bg-amber-50 rounded-lg p-4">
+                        Zalo contact destination is not configured for this deployment.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </Card>
+          )}
+
+          <Card title="Deposit History">
+            {loading ? (
               <PageLoader />
             ) : (
-              <>
-                <Table
-                  columns={columns}
-                  data={transactions}
-                  emptyMessage="No transactions yet"
-                />
-                <Pagination
-                  currentPage={pagination.page}
-                  totalPages={pagination.pages}
-                  onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
-                />
-              </>
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-left text-gray-500">
+                      <th className="py-3 pr-4">Method</th>
+                      <th className="py-3 pr-4">Amount</th>
+                      <th className="py-3 pr-4">Status</th>
+                      <th className="py-3 pr-4">Date</th>
+                      <th className="py-3">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {wallet.deposits.map((deposit) => (
+                      <tr key={deposit.id} className="border-b last:border-0">
+                        <td className="py-3 pr-4">{deposit.payment_method === 'vietqr' ? 'VietQR' : 'Zalo Admin'}</td>
+                        <td className="py-3 pr-4">{formatVnd(deposit.amount_vnd)}</td>
+                        <td className="py-3 pr-4"><Badge variant={statusVariants[deposit.status] || 'default'}>{deposit.status}</Badge></td>
+                        <td className="py-3 pr-4">{new Date(deposit.created_at).toLocaleString()}</td>
+                        <td className="py-3">
+                          {deposit.status === 'pending' && (
+                            <Button
+                              variant="secondary"
+                              loading={cancellingId === deposit.id}
+                              onClick={() => handleCancel(deposit.id)}
+                            >
+                              Cancel
+                            </Button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {!wallet.deposits.length && !authBoundary && (
+                  <p className="py-8 text-center text-gray-500">No deposit requests yet.</p>
+                )}
+              </div>
             )}
+          </Card>
+
+          <Card title="Transaction History">
+            <Table columns={transactionColumns} data={wallet.transactions} emptyMessage={authBoundary ? 'Available after Supabase Auth is enabled' : 'No transactions yet'} />
           </Card>
         </div>
       </div>

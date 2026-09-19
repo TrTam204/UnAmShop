@@ -137,6 +137,58 @@ export const ordersAPI = {
 };
 
 // Wallet API
+const requireSupabaseSession = async () => {
+  const { data, error } = await supabase.auth.getSession();
+
+  if (error) {
+    throw error;
+  }
+
+  if (!data.session) {
+    const authError = new Error('Supabase Auth session required for wallet actions');
+    authError.code = 'SUPABASE_AUTH_REQUIRED';
+    throw authError;
+  }
+
+  return data.session;
+};
+
+const getSupabaseWalletSnapshot = async () => {
+  const session = await requireSupabaseSession();
+  const userId = session.user.id;
+  const [walletResult, transactionResult, depositResult] = await Promise.all([
+    supabase
+      .from('wallets')
+      .select('user_id, balance_vnd')
+      .eq('user_id', userId)
+      .single(),
+    supabase
+      .from('wallet_transactions')
+      .select('id, direction, type, amount_vnd, balance_after_vnd, description, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('deposit_requests')
+      .select('id, amount_vnd, payment_method, payment_reference, status, admin_note, created_at, updated_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false }),
+  ]);
+
+  const firstError = [walletResult, transactionResult, depositResult].find(
+    (result) => result.error
+  )?.error;
+
+  if (firstError) {
+    throw firstError;
+  }
+
+  return {
+    balance: walletResult.data?.balance_vnd || 0,
+    transactions: transactionResult.data || [],
+    deposits: depositResult.data || [],
+  };
+};
+
 export const walletAPI = {
   getBalance: () => api.get('/wallet/balance'),
   getHistory: (params) => api.get('/wallet/history', { params }),
@@ -144,6 +196,32 @@ export const walletAPI = {
   verifyPayment: (data) => api.post('/wallet/verify-payment', data),
   adminAddFunds: (data) => api.post('/wallet/admin/add-funds', data),
   getAllTransactions: (params) => api.get('/wallet/admin/transactions', { params }),
+  getSupabaseSnapshot: getSupabaseWalletSnapshot,
+  createDepositRequest: async (amountVnd, paymentMethod) => {
+    await requireSupabaseSession();
+    const { data, error } = await supabase.rpc('create_deposit_request', {
+      p_amount_vnd: amountVnd,
+      p_payment_method: paymentMethod,
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  },
+  cancelDepositRequest: async (depositRequestId) => {
+    await requireSupabaseSession();
+    const { data, error } = await supabase.rpc('cancel_deposit_request', {
+      p_deposit_request_id: depositRequestId,
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  },
 };
 
 // Admin API
