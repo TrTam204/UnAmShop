@@ -45,16 +45,6 @@ const AdminOrders = () => {
     }
   };
 
-  const handleStatusChange = async (orderId, newStatus) => {
-    try {
-      await ordersAPI.updateStatus(orderId, newStatus);
-      toast.success('Cập nhật trạng thái đơn hàng thành công');
-      fetchOrders();
-    } catch (error) {
-      toast.error(error.response?.data?.error || 'Cập nhật trạng thái thất bại');
-    }
-  };
-
   const getStatusBadge = (status) => {
     const statusConfig = {
       pending: { variant: 'warning', label: 'Đang chờ' },
@@ -130,19 +120,7 @@ const AdminOrders = () => {
     {
       key: 'status',
       title: 'Trạng thái',
-      render: (status, row) => (
-        <select
-          value={status}
-          onChange={(e) => handleStatusChange(row._id, e.target.value)}
-          className="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary-500"
-        >
-          {statusOptions.slice(1).map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-      ),
+      render: (status) => getStatusBadge(status),
     },
     {
       key: 'providerOrderId',

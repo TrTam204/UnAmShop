@@ -1,15 +1,20 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { servicesAPI, ordersAPI } from '../../services/api';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { servicesAPI, ordersAPI, formatWalletBalance } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { Card, Button, Input, Select, PageLoader } from '../../components/ui';
+import PlatformIcon from '../../components/platform/PlatformIcon';
 import toast from 'react-hot-toast';
 
 const NewOrder = () => {
-  const { user, updateUser } = useAuth();
+  const { walletBalanceVnd, refreshWalletBalance } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const serviceParam = searchParams.get('service');
+  const deepLinkAppliedRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const submitKeyRef = useRef(null);
   const [services, setServices] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -23,6 +28,21 @@ const NewOrder = () => {
   useEffect(() => {
     fetchServices();
   }, []);
+
+  useEffect(() => {
+    if (!serviceParam || !services.length || deepLinkAppliedRef.current === serviceParam) {
+      return;
+    }
+
+    const service = services.find((item) => item._id === serviceParam);
+    if (!service) {
+      return;
+    }
+
+    deepLinkAppliedRef.current = serviceParam;
+    setSelectedCategory(service.category);
+    handleServiceChange(service._id);
+  }, [serviceParam, services]);
 
   const fetchServices = async () => {
     try {
@@ -53,7 +73,7 @@ const NewOrder = () => {
 
   const calculateTotal = () => {
     if (!selectedService || !formData.quantity) return 0;
-    return (selectedService.rate / 1000) * parseInt(formData.quantity);
+    return Math.ceil(selectedService.rate * parseInt(formData.quantity));
   };
 
   const handleSubmit = async (e) => {
@@ -71,27 +91,31 @@ const NewOrder = () => {
     }
 
     const total = calculateTotal();
-    if (total > user.walletBalance) {
+    if (walletBalanceVnd === null || walletBalanceVnd < total) {
       toast.error('Số dư không đủ. Vui lòng nạp tiền.');
       return;
     }
 
+    const normalizedLink = formData.link.trim();
+    const nextSubmitKey = submitKeyRef.current ?? globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`;
+    submitKeyRef.current = nextSubmitKey;
     setSubmitting(true);
 
     try {
       await ordersAPI.create({
         serviceId: formData.serviceId,
-        link: formData.link,
+        link: normalizedLink,
         quantity,
+        idempotencyKey: nextSubmitKey,
       });
 
-      // Update user balance
-      updateUser({ walletBalance: user.walletBalance - total });
+      await refreshWalletBalance();
 
       toast.success('Đặt đơn thành công!');
+      submitKeyRef.current = null;
       navigate('/orders');
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Đặt đơn thất bại');
+      toast.error(error.response?.data?.error || error.message || 'Đặt đơn thất bại');
     } finally {
       setSubmitting(false);
     }
@@ -129,18 +153,21 @@ const NewOrder = () => {
             placeholder="Chọn dịch vụ"
             options={filteredServices.map((service) => ({
               value: service._id,
-              label: `${service.title} - ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(service.rate || 0))}/1000`,
+              label: `${service.title} - ${formatWalletBalance(service.rate)} / 1`,
             }))}
           />
 
           {/* Service Details */}
           {selectedService && (
             <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="font-medium text-gray-900 mb-2">Chi tiết dịch vụ</h3>
+              <div className="mb-2 flex items-center gap-3">
+                <PlatformIcon slug={selectedService.platformSlug} name={selectedService.platform} size="sm" fallback={selectedService.platform?.slice(0, 2)} />
+                <h3 className="font-medium text-gray-900">{selectedService.title}</h3>
+              </div>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-gray-500">Giá:</span>
-                  <span className="ml-2 font-medium">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(selectedService.rate || 0))}/1000</span>
+                  <span className="ml-2 font-medium">{formatWalletBalance(selectedService.rate)} / 1</span>
                 </div>
                 <div>
                   <span className="text-gray-500">Tối thiểu:</span>
@@ -187,8 +214,8 @@ const NewOrder = () => {
               </div>
               <div className="text-right">
                 <p className="text-sm text-gray-600">Số dư của bạn</p>
-                <p className={`text-lg font-semibold ${user.walletBalance >= calculateTotal() ? 'text-green-600' : 'text-red-600'}`}>
-                  {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(user.walletBalance || 0))}
+                <p className={`text-lg font-semibold ${walletBalanceVnd !== null && walletBalanceVnd >= calculateTotal() ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatWalletBalance(walletBalanceVnd)}
                 </p>
               </div>
             </div>
@@ -200,12 +227,12 @@ const NewOrder = () => {
             loading={submitting}
             className="w-full"
             size="lg"
-            disabled={!selectedService || calculateTotal() > user.walletBalance}
+            disabled={!selectedService || walletBalanceVnd === null || calculateTotal() > walletBalanceVnd}
           >
             Đặt đơn
           </Button>
 
-          {calculateTotal() > user.walletBalance && (
+          {walletBalanceVnd !== null && calculateTotal() > walletBalanceVnd && (
             <p className="text-center text-sm text-red-500">
               Số dư không đủ.{' '}
               <a href="/add-funds" className="underline">

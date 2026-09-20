@@ -1,151 +1,247 @@
-import { useState } from 'react';
-import { adminAPI, walletAPI } from '../../services/api';
-import { Card, Button, Input } from '../../components/ui';
-import { HiOutlineSearch, HiOutlineCheck } from 'react-icons/hi';
+import { useEffect, useMemo, useState } from 'react';
+import { supabaseAdminAPI } from '../../services/api';
+import { Card, Button, Input, Table, Badge } from '../../components/ui';
+import { HiOutlineRefresh, HiOutlineCheck, HiOutlineX } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 
+const statusOptions = [
+  { value: 'all', label: 'Tất cả' },
+  { value: 'pending', label: 'Chờ duyệt' },
+  { value: 'approved', label: 'Đã duyệt' },
+  { value: 'rejected', label: 'Từ chối' },
+];
+
+const formatCurrency = (value) =>
+  new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+    maximumFractionDigits: 0,
+  }).format(Number(value || 0));
+
+const getStatusVariant = (status) => {
+  switch (status) {
+    case 'pending':
+      return 'warning';
+    case 'approved':
+      return 'success';
+    case 'rejected':
+      return 'danger';
+    default:
+      return 'default';
+  }
+};
+
+const getStatusLabel = (status) => {
+  switch (status) {
+    case 'pending':
+      return 'Chờ duyệt';
+    case 'approved':
+      return 'Đã duyệt';
+    case 'rejected':
+      return 'Từ chối';
+    case 'cancelled':
+      return 'Đã hủy';
+    default:
+      return status || 'Không xác định';
+  }
+};
+
 const AdminAddFunds = () => {
-  const [searchEmail, setSearchEmail] = useState('');
-  const [searching, setSearching] = useState(false);
-  const [user, setUser] = useState(null);
-  const [amount, setAmount] = useState('');
-  const [description, setDescription] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const [requests, setRequests] = useState([]);
+  const [statusFilter, setStatusFilter] = useState('pending');
+  const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [processingId, setProcessingId] = useState(null);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!searchEmail) return;
-
-    setSearching(true);
-    setUser(null);
-
+  const loadRequests = async () => {
+    setLoading(true);
     try {
-      const response = await adminAPI.getUsers({ search: searchEmail, limit: 1 });
-      if (response.data.data.length > 0) {
-        setUser(response.data.data[0]);
-      } else {
-        toast.error('Không tìm thấy người dùng');
-      }
+      const response = await supabaseAdminAPI.listDeposits({
+        status: statusFilter === 'all' ? null : statusFilter,
+        limit: 100,
+        offset: 0,
+      });
+      setRequests(Array.isArray(response) ? response : []);
     } catch (error) {
-      toast.error('Không thể tìm kiếm người dùng');
+      toast.error(error.message || 'Không thể tải danh sách duyệt nạp tiền');
+      setRequests([]);
     } finally {
-      setSearching(false);
+      setLoading(false);
     }
   };
 
-  const handleAddFunds = async (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    loadRequests();
+  }, [statusFilter]);
 
-    const amountNum = parseFloat(amount);
-    if (!amountNum || amountNum <= 0) {
-      toast.error('Vui lòng nhập số tiền hợp lệ');
+  const filteredRequests = useMemo(() => {
+    const normalizedSearch = search.trim().toLowerCase();
+
+    if (!normalizedSearch) {
+      return requests;
+    }
+
+    return requests.filter((row) => {
+      const haystack = [row.email, row.full_name, row.payment_reference, row.payment_method]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+
+      return haystack.includes(normalizedSearch);
+    });
+  }, [requests, search]);
+
+  const handleApprove = async (requestId) => {
+    if (!window.confirm('Duyệt yêu cầu nạp tiền này?')) {
       return;
     }
 
-    setSubmitting(true);
-
+    setProcessingId(requestId);
     try {
-      const response = await walletAPI.adminAddFunds({
-        userId: user._id,
-        amount: amountNum,
-        description: description || `Manual addition by admin`,
-      });
-
-      toast.success(`${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(amountNum)} đã được thêm vào ví của ${user.name}`);
-      setUser({
-        ...user,
-        walletBalance: response.data.data.newBalance,
-      });
-      setAmount('');
-      setDescription('');
+      await supabaseAdminAPI.approveDeposit(requestId);
+      toast.success('Đã duyệt khoản nạp tiền');
+      await loadRequests();
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Nạp tiền thất bại');
+      toast.error(error.message || 'Duyệt nạp tiền thất bại');
     } finally {
-      setSubmitting(false);
+      setProcessingId(null);
     }
   };
 
+  const handleReject = async (requestId) => {
+    const adminNote = window.prompt('Ghi chú từ chối (tuỳ chọn)', '');
+    if (adminNote === null) {
+      return;
+    }
+
+    setProcessingId(requestId);
+    try {
+      await supabaseAdminAPI.rejectDeposit(requestId, adminNote || null);
+      toast.success('Đã từ chối khoản nạp tiền');
+      await loadRequests();
+    } catch (error) {
+      toast.error(error.message || 'Từ chối nạp tiền thất bại');
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const columns = [
+    {
+      key: 'created_at',
+      title: 'Thời gian',
+      render: (value) => new Date(value).toLocaleString('vi-VN'),
+    },
+    {
+      key: 'email',
+      title: 'Người dùng',
+      render: (_, row) => (
+        <div>
+          <div className="font-medium text-[var(--text-primary)]">{row.full_name || 'Không rõ'}</div>
+          <div className="text-xs text-[var(--text-muted)]">{row.email}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'amount_vnd',
+      title: 'Số tiền',
+      render: (value) => <span className="font-semibold">{formatCurrency(value)}</span>,
+    },
+    {
+      key: 'payment_method',
+      title: 'Phương thức',
+      render: (value) => (value === 'vietqr' ? 'VietQR' : value === 'zalo' ? 'Zalo' : value || '—'),
+    },
+    {
+      key: 'payment_reference',
+      title: 'Mã tham chiếu',
+      render: (value) => value || '—',
+    },
+    {
+      key: 'status',
+      title: 'Trạng thái',
+      render: (status) => <Badge variant={getStatusVariant(status)}>{getStatusLabel(status)}</Badge>,
+    },
+    {
+      key: 'actions',
+      title: 'Hành động',
+      render: (_, row) => {
+        if (row.status !== 'pending') {
+          return <span className="text-xs text-[var(--text-muted)]">Đã xử lý</span>;
+        }
+
+        return (
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="success"
+              onClick={() => handleApprove(row.id)}
+              loading={processingId === row.id}
+            >
+              <HiOutlineCheck className="mr-1 h-4 w-4" />
+              Duyệt
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => handleReject(row.id)}
+              loading={processingId === row.id}
+            >
+              <HiOutlineX className="mr-1 h-4 w-4" />
+              Từ chối
+            </Button>
+          </div>
+        );
+      },
+    },
+  ];
+
   return (
-    <div className="fade-in max-w-2xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Nạp tiền thủ công</h1>
-        <p className="text-gray-500 mt-1">Thêm tiền vào ví người dùng</p>
+    <div className="fade-in">
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Duyệt nạp tiền</h1>
+          <p className="mt-1 text-[var(--text-secondary)]">Xác nhận yêu cầu nạp tiền an toàn bằng RPC</p>
+        </div>
+        <Button variant="secondary" onClick={loadRequests} loading={loading}>
+          <HiOutlineRefresh className="mr-2 h-4 w-4" />
+          Làm mới
+        </Button>
       </div>
 
-      {/* Search User */}
-      <Card title="Tìm kiếm người dùng" className="mb-6">
-        <form onSubmit={handleSearch} className="flex gap-3">
+      <Card className="mb-6">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center">
           <div className="flex-1">
             <Input
-              placeholder="Enter user email"
-              value={searchEmail}
-              onChange={(e) => setSearchEmail(e.target.value)}
+              placeholder="Tìm theo email, tên, mã tham chiếu..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <Button type="submit" loading={searching}>
-            <HiOutlineSearch className="w-5 h-5 mr-2" />
-            Tìm kiếm
-          </Button>
-        </form>
+          <div className="md:w-52">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-3 py-3 text-sm text-[var(--text-primary)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+            >
+              {statusOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </Card>
 
-      {/* User Found */}
-      {user && (
-        <Card title="Thông tin người dùng">
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-xl">
-                  {user.name.charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <div>
-                <p className="font-semibold text-lg">{user.name}</p>
-                <p className="text-gray-500">{user.email}</p>
-              </div>
-              <div className="ml-auto text-right">
-                <p className="text-sm text-gray-500">Số dư hiện tại</p>
-                <p className="text-2xl font-bold text-primary-600">
-                  {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(user.walletBalance || 0))}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <form onSubmit={handleAddFunds} className="space-y-4">
-            <Input
-              label="Số tiền nạp (VND)"
-              type="number"
-              step="0.01"
-              placeholder="Nhập số tiền"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              required
-            />
-            <Input
-              label="Mô tả (tùy chọn)"
-              placeholder="Lý do nạp tiền"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-
-            {/* Preview */}
-            {amount && parseFloat(amount) > 0 && (
-              <div className="p-4 bg-green-50 rounded-lg">
-                <p className="text-sm text-gray-600">Số dư mới sau khi nạp</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(user.walletBalance || 0) + parseFloat(amount || 0))}
-                </p>
-              </div>
-            )}
-
-            <Button type="submit" loading={submitting} className="w-full" size="lg">
-              <HiOutlineCheck className="w-5 h-5 mr-2" />
-              Nạp tiền
-            </Button>
-          </form>
-        </Card>
-      )}
+      <Card>
+        <Table
+          columns={columns}
+          data={filteredRequests}
+          loading={loading}
+          emptyMessage="Không có yêu cầu nạp tiền nào"
+        />
+      </Card>
     </div>
   );
 };

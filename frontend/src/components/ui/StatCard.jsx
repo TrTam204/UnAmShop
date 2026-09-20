@@ -1,32 +1,28 @@
 const StatCard = ({ title, value, icon: Icon, trend, trendValue, color = 'primary' }) => {
   const colors = {
-    primary: 'bg-primary-500',
-    success: 'bg-green-500',
-    warning: 'bg-yellow-500',
-    danger: 'bg-red-500',
-    info: 'bg-blue-500',
+    primary: 'bg-violet-500/10 text-violet-600 dark:text-violet-300',
+    success: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-300',
+    warning: 'bg-amber-500/10 text-amber-600 dark:text-amber-300',
+    danger: 'bg-red-500/10 text-red-600 dark:text-red-300',
+    info: 'bg-sky-500/10 text-sky-600 dark:text-sky-300',
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <div className="flex items-center justify-between">
+    <div className="rounded-[20px] border border-[var(--border)] bg-[var(--card-bg)] p-5 shadow-sm">
+      <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-gray-500">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+          <p className="text-sm font-medium text-[var(--text-muted)]">{title}</p>
+          <p className="mt-2 text-[28px] font-bold tracking-tight text-[var(--text-primary)]">{value}</p>
           {trend && (
-            <div
-              className={`flex items-center mt-2 text-sm ${
-                trend === 'up' ? 'text-green-600' : 'text-red-600'
-              }`}
-            >
+            <div className={`mt-2 flex items-center text-sm ${trend === 'up' ? 'text-emerald-600 dark:text-emerald-300' : 'text-red-600 dark:text-red-300'}`}>
               <span>{trend === 'up' ? '↑' : '↓'}</span>
               <span className="ml-1">{trendValue}</span>
             </div>
           )}
         </div>
         {Icon && (
-          <div className={`p-3 rounded-lg ${colors[color]}`}>
-            <Icon className="w-6 h-6 text-white" />
+          <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${colors[color]}`}>
+            <Icon className="h-6 w-6" />
           </div>
         )}
       </div>

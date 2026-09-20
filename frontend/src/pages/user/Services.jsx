@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { servicesAPI } from '../../services/api';
 import { Card, Input, PageLoader } from '../../components/ui';
+import PlatformIcon from '../../components/platform/PlatformIcon';
 import { HiOutlineSearch } from 'react-icons/hi';
 
 const Services = () => {
@@ -94,7 +95,10 @@ const Services = () => {
                   </span>
                   <span className="text-xs text-gray-500">ID: {service._id.slice(-6)}</span>
                 </div>
-                <h3 className="font-semibold text-gray-900">{service.title}</h3>
+                <div className="flex items-center gap-3">
+                  <PlatformIcon slug={service.platformSlug} name={service.platform} size="sm" fallback={service.platform?.slice(0, 2)} />
+                  <h3 className="font-semibold text-gray-900">{service.title}</h3>
+                </div>
                 {service.description && (
                   <p className="text-sm text-gray-500 mt-1">{service.description}</p>
                 )}

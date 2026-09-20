@@ -52,19 +52,19 @@ const PublicServices = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[var(--app-bg)] text-[var(--text-primary)]">
       {/* Navbar */}
-      <nav className="bg-white shadow-sm sticky top-0 z-50">
+      <nav className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--topbar-bg)] backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link to="/" className="text-2xl font-bold text-primary-600">ỪnAm SHOP</Link>
+              <Link to="/" className="text-2xl font-black text-[var(--text-primary)]">ỪnAm <span className="text-indigo-600 dark:text-indigo-300">SHOP</span></Link>
             </div>
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
                 <Link
                   to="/dashboard"
-                  className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors"
+                  className="rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-blue-600 px-6 py-2 font-medium text-white shadow-lg shadow-indigo-500/20 transition hover:brightness-110"
                 >
                   Bảng điều khiển
                 </Link>
@@ -72,13 +72,13 @@ const PublicServices = () => {
                 <>
                   <Link
                     to="/login"
-                    className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+                    className="font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
                   >
                     Đăng nhập
                   </Link>
                   <Link
                     to="/register"
-                    className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors"
+                    className="rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-blue-600 px-6 py-2 font-medium text-white shadow-lg shadow-indigo-500/20 transition hover:brightness-110"
                   >
                     Bắt đầu
                   </Link>
@@ -90,14 +90,14 @@ const PublicServices = () => {
       </nav>
 
       {/* Header */}
-      <div className="bg-gradient-to-br from-primary-600 to-primary-800 text-white py-16">
+      <div className="bg-gradient-to-br from-indigo-600 via-violet-600 to-blue-600 py-16 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link to="/" className="inline-flex items-center text-primary-200 hover:text-white mb-4">
+          <Link to="/" className="mb-4 inline-flex items-center text-indigo-100 hover:text-white">
             <HiArrowLeft className="w-5 h-5 mr-2" />
             Quay lại trang chủ
           </Link>
           <h1 className="text-4xl font-bold mb-4">Tất cả dịch vụ</h1>
-          <p className="text-xl text-primary-100 max-w-2xl">
+          <p className="max-w-2xl text-xl text-indigo-100">
             Khám phá danh sách dịch vụ SMM đầy đủ với mức giá cạnh tranh.
           </p>
         </div>
@@ -108,13 +108,13 @@ const PublicServices = () => {
         <div className="flex flex-col md:flex-row gap-4 mb-8">
           {/* Search */}
           <div className="relative flex-1">
-            <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[var(--text-muted)]" />
             <input
               type="text"
               placeholder="Tìm kiếm dịch vụ..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] py-3 pl-10 pr-4 text-[var(--text-primary)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
@@ -122,7 +122,7 @@ const PublicServices = () => {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            className="rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-[var(--text-primary)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option value="all">Tất cả danh mục</option>
             {categories.map((category) => (
@@ -136,7 +136,7 @@ const PublicServices = () => {
         {/* Services List */}
         {loading ? (
           <div className="flex justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+            <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-indigo-600"></div>
           </div>
         ) : filteredServices.length === 0 ? (
           <div className="text-center py-20">
@@ -147,34 +147,34 @@ const PublicServices = () => {
             {filteredServices.map((service) => (
               <div
                 key={service._id}
-                className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-100"
+                className="rounded-[20px] border border-[var(--border)] bg-[var(--card-bg)] p-6 shadow-sm transition-shadow hover:border-indigo-300 hover:shadow-md"
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="px-2 py-1 bg-primary-100 text-primary-700 text-xs font-medium rounded">
+                      <span className="rounded-full bg-indigo-500/10 px-2 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-200">
                         {service.category}
                       </span>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                    <h3 className="mb-1 text-lg font-semibold text-[var(--text-primary)]">
                       {service.title}
                     </h3>
-                    <p className="text-gray-500 text-sm">{service.description}</p>
-                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                    <p className="text-sm text-[var(--text-secondary)]">{service.description}</p>
+                    <div className="mt-2 flex items-center gap-4 text-sm text-[var(--text-muted)]">
                       <span>Min: {service.minQuantity}</span>
                       <span>Max: {service.maxQuantity}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <div className="text-2xl font-bold text-primary-600">
-                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(service.pricePerUnit || 0))}
+                      <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-300">
+                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 8 }).format(Number(service.pricePerUnit || 0))}
                       </div>
-                      <div className="text-gray-500 text-sm">mỗi 1000</div>
+                      <div className="text-sm text-[var(--text-muted)]">/ 1 đơn vị</div>
                     </div>
                     <button
                       onClick={() => handleOrder(service._id)}
-                      className="flex items-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
+                      className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-blue-600 px-6 py-3 font-medium text-white transition hover:brightness-110"
                     >
                       <HiOutlineShoppingCart className="w-5 h-5" />
                       Đặt đơn

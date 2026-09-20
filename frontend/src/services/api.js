@@ -3,6 +3,14 @@ import { supabase } from '../lib/supabase';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
+export const formatWalletBalance = (value) => {
+  if (value === null || value === undefined) {
+    return '—';
+  }
+
+  return `${new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 }).format(Number(value))} ₫`;
+};
+
 const api = axios.create({
   baseURL: API_URL,
   withCredentials: true,
@@ -48,14 +56,168 @@ api.interceptors.response.use(
   }
 );
 
+const normalizeAuthUser = (sessionUser, profile = null) => {
+  const userMeta = sessionUser?.user_metadata || {};
+  const profileRow = profile || {};
+
+  return {
+    id: sessionUser?.id || profileRow.id,
+    email: sessionUser?.email || profileRow.email || '',
+    name: profileRow.full_name || userMeta.full_name || userMeta.name || sessionUser?.email || '',
+    role: profileRow.role || 'user',
+    status: profileRow.status || 'active',
+    createdAt: profileRow.created_at || sessionUser?.created_at || new Date().toISOString(),
+    updatedAt: profileRow.updated_at || null,
+  };
+};
+
+const normalizeOrderRow = (row = {}) => ({
+  ...row,
+  _id: row.id || row._id,
+  user: row.user || null,
+  service: row.service || null,
+  amount: row.charge_vnd ?? row.amount ?? 0,
+  createdAt: row.created_at || row.createdAt,
+  updatedAt: row.updated_at || row.updatedAt,
+  completedAt: row.completed_at || row.completedAt,
+});
+
+const getCurrentSupabaseProfile = async () => {
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+  if (sessionError) {
+    throw sessionError;
+  }
+
+  if (!sessionData.session?.user) {
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', sessionData.session.user.id)
+    .maybeSingle();
+
+  if (error && error.code !== 'PGRST116') {
+    throw error;
+  }
+
+  return normalizeAuthUser(sessionData.session.user, data || null);
+};
+
 // Auth API
 export const authAPI = {
-  login: (data) => api.post('/auth/login', data),
-  register: (data) => api.post('/auth/register', data),
-  logout: () => api.post('/auth/logout'),
-  getMe: () => api.get('/auth/me'),
-  updateProfile: (data) => api.put('/auth/profile', data),
-  updatePassword: (data) => api.put('/auth/password', data),
+  login: async ({ email, password }) => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      throw error;
+    }
+
+    const user = await getCurrentSupabaseProfile();
+
+    return {
+      data: {
+        user,
+        session: data.session,
+      },
+    };
+  },
+  register: async ({ name, email, password }) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
+        },
+      },
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    const user = data.user
+      ? normalizeAuthUser(data.user, {
+          id: data.user.id,
+          email: data.user.email,
+          full_name: data.user.user_metadata?.full_name || name,
+          role: 'user',
+          status: 'active',
+          created_at: data.user.created_at,
+        })
+      : null;
+
+    return {
+      data: {
+        user,
+        session: data.session,
+      },
+    };
+  },
+  logout: async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      throw error;
+    }
+    return { data: { success: true } };
+  },
+  getMe: async () => {
+    const user = await getCurrentSupabaseProfile();
+    return {
+      data: {
+        data: user,
+      },
+    };
+  },
+  updateProfile: async (data) => {
+    const currentProfile = await getCurrentSupabaseProfile();
+
+    if (!currentProfile) {
+      throw new Error('Người dùng chưa đăng nhập');
+    }
+
+    const { error: userError } = await supabase.auth.updateUser({
+      data: { full_name: data.name },
+    });
+
+    if (userError) {
+      throw userError;
+    }
+
+    const { data: updatedProfile, error: profileError } = await supabase
+      .from('profiles')
+      .update({ full_name: data.name, updated_at: new Date().toISOString() })
+      .eq('id', currentProfile.id)
+      .select()
+      .single();
+
+    if (profileError) {
+      throw profileError;
+    }
+
+    return {
+      data: {
+        data: normalizeAuthUser({ id: currentProfile.id, email: currentProfile.email, created_at: currentProfile.createdAt }, updatedProfile),
+      },
+    };
+  },
+  updatePassword: async ({ newPassword }) => {
+    const currentProfile = await getCurrentSupabaseProfile();
+
+    if (!currentProfile) {
+      throw new Error('Người dùng chưa đăng nhập');
+    }
+
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) {
+      throw error;
+    }
+
+    return { data: { success: true } };
+  },
 };
 
 // Services API
@@ -108,7 +270,7 @@ const getCatalogResponse = async (params = {}) => {
 };
 
 export const servicesAPI = {
-  getAll: (params) => api.get('/services', { params }),
+  getAll: (params) => getCatalogResponse(params),
   getCatalog: getCatalogResponse,
   getCatalogCategories: async () => {
     const response = await getCatalogResponse();
@@ -119,21 +281,90 @@ export const servicesAPI = {
       },
     };
   },
+  getActivePlatforms: async () => {
+    const { data, error } = await supabase
+      .from('platforms')
+      .select('id, name, slug, sort_order')
+      .eq('is_active', true)
+      .order('sort_order', { ascending: true })
+      .order('name', { ascending: true });
+
+    if (error) {
+      throw error;
+    }
+
+    return {
+      data: {
+        success: true,
+        data: (data || []).map((platform) => ({
+          id: platform.id,
+          name: platform.name,
+          slug: platform.slug,
+          sortOrder: platform.sort_order,
+        })),
+      },
+    };
+  },
   getById: (id) => api.get(`/services/${id}`),
   getCategories: () => api.get('/services/categories'),
-  create: (data) => api.post('/services', data),
-  update: (id, data) => api.put(`/services/${id}`, data),
-  delete: (id) => api.delete(`/services/${id}`),
 };
 
 // Orders API
 export const ordersAPI = {
-  create: (data) => api.post('/orders', data),
-  getAll: (params) => api.get('/orders', { params }),
+  create: async ({ serviceId, link, quantity, idempotencyKey }) => {
+    const result = await ordersAPI.createSupabaseOrder({
+      serviceId,
+      link,
+      quantity,
+      idempotencyKey,
+    });
+
+    return { data: { data: result } };
+  },
+  getAll: async ({ page = 1, limit = 20, status = null } = {}) => {
+    await requireSupabaseSession();
+
+    const { data, error } = await supabase.rpc('get_my_orders', {
+      p_status: status || null,
+      p_limit: limit,
+      p_offset: (page - 1) * limit,
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    const rows = (data || []).map(normalizeOrderRow);
+    return {
+      data: {
+        data: rows,
+        page,
+        pages: Math.max(1, Math.ceil(rows.length / limit) || 1),
+        total: rows.length,
+      },
+    };
+  },
   getById: (id) => api.get(`/orders/${id}`),
-  getAllAdmin: (params) => api.get('/orders/admin/all', { params }),
+  getAllAdmin: async ({ page = 1, limit = 30, status = null } = {}) => {
+    const result = await supabaseAdminAPI.listOrders({
+      status: status || null,
+      limit,
+      offset: (page - 1) * limit,
+    });
+
+    return {
+      data: {
+        data: Array.isArray(result) ? result.map(normalizeOrderRow) : [],
+        page,
+        pages: Math.max(1, Math.ceil((Array.isArray(result) ? result.length : 0) / limit) || 1),
+        total: Array.isArray(result) ? result.length : 0,
+      },
+    };
+  },
   getStats: () => api.get('/orders/admin/stats'),
-  updateStatus: (id, status) => api.put(`/orders/${id}/status`, { status }),
+  updateStatus: () => {
+    throw new Error('Không hỗ trợ cập nhật trạng thái đơn hàng trực tiếp qua frontend. Vui lòng dùng RPC an toàn trên admin side.');
+  },
   createSupabaseOrder: async ({ serviceId, link, quantity, idempotencyKey }) => {
     await requireSupabaseSession();
     const { data, error } = await supabase.rpc('create_order', {
@@ -212,7 +443,7 @@ const getSupabaseWalletSnapshot = async () => {
   }
 
   return {
-    balance: walletResult.data?.balance_vnd || 0,
+    balance: walletResult.data?.balance_vnd ?? null,
     transactions: transactionResult.data || [],
     deposits: depositResult.data || [],
   };
@@ -223,7 +454,6 @@ export const walletAPI = {
   getHistory: (params) => api.get('/wallet/history', { params }),
   createPaymentOrder: (amount) => api.post('/wallet/add-funds', { amount }),
   verifyPayment: (data) => api.post('/wallet/verify-payment', data),
-  adminAddFunds: (data) => api.post('/wallet/admin/add-funds', data),
   getAllTransactions: (params) => api.get('/wallet/admin/transactions', { params }),
   getSupabaseSnapshot: getSupabaseWalletSnapshot,
   createDepositRequest: async (amountVnd, paymentMethod) => {
@@ -255,11 +485,40 @@ export const walletAPI = {
 
 // Admin API
 export const adminAPI = {
-  getDashboard: () => api.get('/admin/dashboard'),
-  getUsers: (params) => api.get('/admin/users', { params }),
+  getDashboard: async () => {
+    const data = await callAdminSupabaseRpc('admin_dashboard_stats');
+    return { data: { data } };
+  },
+  getUsers: async (params = {}) => {
+    const data = await supabaseAdminAPI.listProfiles({
+      search: params.search || null,
+      role: params.role || null,
+      status: params.status || null,
+      limit: params.limit || 20,
+      offset: params.offset || 0,
+    });
+
+    return {
+      data: {
+        data: (data || []).map((user) => ({
+          _id: user.user_id,
+          id: user.user_id,
+          name: user.full_name || user.email,
+          email: user.email,
+          role: user.role,
+          status: user.status,
+          isActive: user.status === 'active',
+          walletBalance: Number(user.balance_vnd || 0),
+          createdAt: user.created_at,
+          updatedAt: user.updated_at,
+        })),
+        page: 1,
+        pages: 1,
+        total: (data || []).length,
+      },
+    };
+  },
   getUser: (id) => api.get(`/admin/users/${id}`),
-  updateUser: (id, data) => api.put(`/admin/users/${id}`, data),
-  deleteUser: (id) => api.delete(`/admin/users/${id}`),
 };
 
 const callAdminSupabaseRpc = async (name, args = {}) => {
@@ -275,6 +534,21 @@ const callAdminSupabaseRpc = async (name, args = {}) => {
 
 // Dormant until AuthContext uses a Supabase session.
 export const supabaseAdminAPI = {
+  listServices: (params) => callAdminSupabaseRpc('admin_list_services', {
+    p_search: params?.search || null,
+    p_limit: params?.limit || 100,
+    p_offset: params?.offset || 0,
+  }),
+  listCategories: async () => {
+    const { data, error } = await supabase.from('categories').select('id, name, platforms (name)').order('name');
+    if (error) throw error;
+    return data || [];
+  },
+  listProviderServices: async () => {
+    const { data, error } = await supabase.from('provider_services').select('id, provider_service_id, raw_name, providers (name)').order('provider_service_id');
+    if (error) throw error;
+    return data || [];
+  },
   listProfiles: (params) => callAdminSupabaseRpc('admin_list_profiles', {
     p_search: params?.search || null,
     p_role: params?.role || null,
@@ -287,6 +561,17 @@ export const supabaseAdminAPI = {
     p_role: role,
     p_status: status,
   }),
+  updateProfileDetails: (userId, fullName) => callAdminSupabaseRpc('admin_update_profile_details', {
+    p_user_id: userId,
+    p_full_name: fullName,
+  }),
+  inviteUser: async ({ full_name, email, role, status }) => {
+    const { data, error } = await supabase.functions.invoke('admin-users', {
+      body: { full_name, email, role, status },
+    });
+    if (error) throw error;
+    return data;
+  },
   createPlatform: (data) => callAdminSupabaseRpc('admin_create_platform', {
     p_name: data.name,
     p_slug: data.slug,

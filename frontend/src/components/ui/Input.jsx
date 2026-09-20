@@ -15,22 +15,20 @@ const Input = forwardRef(
     return (
       <div className={className}>
         {label && (
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="mb-2 block text-sm font-medium text-[var(--text-secondary)]">
             {label}
           </label>
         )}
         <input
           ref={ref}
           type={type}
-          className={`w-full px-4 py-2.5 border rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors ${
-            error
-              ? 'border-red-500 focus:ring-red-500'
-              : 'border-gray-300'
+          className={`w-full rounded-xl border bg-[var(--surface-strong)] px-4 py-3 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] transition-colors focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${
+            error ? 'border-red-500 focus:ring-red-500' : 'border-[var(--border)]'
           }`}
           {...props}
         />
         {helperText && !error && (
-          <p className="mt-1 text-sm text-gray-500">{helperText}</p>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">{helperText}</p>
         )}
         {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
       </div>

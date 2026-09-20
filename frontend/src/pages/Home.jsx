@@ -66,7 +66,7 @@ const Home = () => {
             {isAuthenticated ? (
               <Link
                 to="/dashboard"
-                className="rounded-lg bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700"
+                className="rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:brightness-110"
               >
                 Bảng điều khiển
               </Link>
@@ -77,7 +77,7 @@ const Home = () => {
                 </Link>
                 <Link
                   to="/register"
-                  className="rounded-lg bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700"
+                  className="rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:brightness-110"
                 >
                   Bắt đầu
                 </Link>
@@ -88,29 +88,29 @@ const Home = () => {
       </nav>
 
       <main>
-        <section className="bg-gradient-to-br from-sky-600 via-sky-700 to-blue-800 px-4 py-20 text-white">
+        <section className="bg-gradient-to-br from-indigo-600 via-violet-600 to-blue-600 px-4 py-20 text-white">
           <div className="mx-auto max-w-7xl text-center">
-            <div className="mb-5 inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-sky-50 backdrop-blur-sm">
+            <div className="mb-5 inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-indigo-50 backdrop-blur-sm">
               SMM chuyên nghiệp • 24/7
             </div>
             <h1 className="mx-auto max-w-4xl text-4xl font-black tracking-tight md:text-6xl">
               Tăng trưởng mạng xã hội
-              <span className="mt-2 block text-sky-100">của bạn ngay hôm nay</span>
+              <span className="mt-2 block text-indigo-100">của bạn ngay hôm nay</span>
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-sky-100 md:text-xl">
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-indigo-100 md:text-xl">
               ỪnAm SHOP là nền tảng SMM hàng đầu cho mọi nhu cầu quảng bá mạng xã hội. Nhận follower, like,
               view và nhiều dịch vụ khác với mức giá ưu đãi.
             </p>
             <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
               <Link
                 to={isAuthenticated ? '/new-order' : '/register'}
-                className="rounded-xl bg-white px-8 py-3 text-base font-semibold text-sky-700 shadow-lg transition hover:bg-slate-100"
+                className="rounded-xl bg-white px-8 py-3 text-base font-semibold text-indigo-700 shadow-lg transition hover:bg-slate-100"
               >
                 Đặt đơn ngay
               </Link>
               <Link
                 to="/services"
-                className="rounded-xl border border-white/40 bg-white/5 px-8 py-3 text-base font-semibold text-white transition hover:bg-white hover:text-sky-700"
+                className="rounded-xl border border-white/40 bg-white/5 px-8 py-3 text-base font-semibold text-white transition hover:bg-white hover:text-indigo-700"
               >
                 Xem dịch vụ
               </Link>
@@ -128,7 +128,7 @@ const Home = () => {
                 ['24/7', 'Hỗ trợ khách hàng'],
               ].map(([value, label]) => (
                 <div key={label} className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center shadow-sm">
-                  <div className="text-3xl font-black text-sky-600 md:text-4xl">{value}</div>
+                  <div className="text-3xl font-black text-indigo-600 md:text-4xl">{value}</div>
                   <div className="mt-2 text-sm text-slate-600">{label}</div>
                 </div>
               ))}
@@ -149,7 +149,7 @@ const Home = () => {
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {features.map((feature, index) => (
                 <div key={index} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-100 text-sky-600">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600">
                     <feature.icon className="h-6 w-6" />
                   </div>
                   <h3 className="mb-2 text-xl font-bold text-slate-900">{feature.title}</h3>
@@ -173,15 +173,15 @@ const Home = () => {
 
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {services.map((service, index) => (
-                <div key={index} className="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm transition hover:border-sky-200 hover:bg-white hover:shadow-md">
+                  <div key={index} className="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm transition hover:border-indigo-200 hover:bg-white hover:shadow-md">
                   <h3 className="text-lg font-bold text-slate-900">{service.name}</h3>
                   <div className="mt-4 flex items-baseline gap-2">
-                    <span className="text-3xl font-black text-sky-600">{service.price}</span>
+                    <span className="text-3xl font-black text-indigo-600">{service.price}</span>
                     <span className="text-sm text-slate-500">/ {service.per}</span>
                   </div>
                   <Link
                     to={isAuthenticated ? '/new-order' : '/register'}
-                    className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-sky-700"
+                    className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110"
                   >
                     Đặt đơn ngay
                   </Link>
@@ -190,24 +190,24 @@ const Home = () => {
             </div>
 
             <div className="mt-10 text-center">
-              <Link to="/services" className="text-base font-semibold text-sky-600 underline-offset-4 hover:underline">
+              <Link to="/services" className="text-base font-semibold text-indigo-600 underline-offset-4 hover:underline">
                 Xem tất cả dịch vụ →
               </Link>
             </div>
           </div>
         </section>
 
-        <section className="bg-gradient-to-br from-sky-600 via-sky-700 to-blue-800 px-4 py-20 text-white">
+        <section className="bg-gradient-to-br from-indigo-600 via-violet-600 to-blue-600 px-4 py-20 text-white">
           <div className="mx-auto max-w-4xl text-center">
             <h2 className="text-3xl font-black tracking-tight md:text-4xl">
               Sẵn sàng tăng trưởng mạng xã hội của bạn?
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-sky-100">
+            <p className="mx-auto mt-4 max-w-2xl text-indigo-100">
               Tham gia cùng hàng nghìn khách hàng đã hài lòng và bắt đầu tăng trưởng ngay hôm nay.
             </p>
             <Link
               to={isAuthenticated ? '/dashboard' : '/register'}
-              className="mt-8 inline-flex rounded-xl bg-white px-8 py-3 text-base font-bold text-sky-700 shadow-lg transition hover:bg-slate-100"
+              className="mt-8 inline-flex rounded-xl bg-white px-8 py-3 text-base font-bold text-indigo-700 shadow-lg transition hover:bg-slate-100"
             >
               Bắt đầu miễn phí
             </Link>

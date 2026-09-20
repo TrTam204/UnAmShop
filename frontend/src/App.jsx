@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { DashboardLayout } from './components/layout';
 import { ProtectedRoute, AdminRoute, PublicRoute } from './components/routes';
+import { applyTheme, getInitialTheme, toggleTheme } from './theme';
 
 // Public Pages
 import Home from './pages/Home';
@@ -14,6 +16,7 @@ import Contact from './pages/public/Contact';
 // Auth Pages
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import ForgotPassword from './pages/auth/ForgotPassword';
 
 // User Pages
 import Dashboard from './pages/user/Dashboard';
@@ -31,6 +34,12 @@ import AdminOrders from './pages/admin/AdminOrders';
 import AdminAddFunds from './pages/admin/AdminAddFunds';
 
 function App() {
+  const [theme, setTheme] = useState(getInitialTheme);
+
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
+
   return (
     <Routes>
       {/* Home Page - Always accessible */}
@@ -50,11 +59,12 @@ function App() {
       <Route element={<PublicRoute />}>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Route>
 
       {/* Protected User Routes */}
       <Route element={<ProtectedRoute />}>
-        <Route element={<DashboardLayout />}>
+        <Route element={<DashboardLayout theme={theme} onToggleTheme={() => setTheme((current) => toggleTheme(current))} />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/new-order" element={<NewOrder />} />
           <Route path="/orders" element={<Orders />} />
@@ -66,7 +76,7 @@ function App() {
 
       {/* Admin Routes */}
       <Route element={<AdminRoute />}>
-        <Route element={<DashboardLayout />}>
+        <Route element={<DashboardLayout theme={theme} onToggleTheme={() => setTheme((current) => toggleTheme(current))} />}>
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/services" element={<AdminServices />} />
           <Route path="/admin/users" element={<AdminUsers />} />

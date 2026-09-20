@@ -1,383 +1,186 @@
-import { useState, useEffect } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { servicesAPI } from '../../services/api';
+import { servicesAPI, formatWalletBalance } from '../../services/api';
+import PlatformIcon from '../../components/platform/PlatformIcon';
+import { Button, Card, PageLoader } from '../../components/ui';
 import {
-  HiOutlineShoppingCart,
   HiArrowLeft,
-  HiOutlineLightningBolt,
-  HiOutlineShieldCheck,
   HiOutlineClock,
+  HiOutlineLightningBolt,
+  HiOutlineShoppingCart,
+  HiOutlineShieldCheck,
 } from 'react-icons/hi';
-import { 
-  FaInstagram, 
-  FaYoutube, 
-  FaFacebook, 
-  FaTwitter, 
-  FaTelegram, 
-  FaTiktok,
-  FaLinkedin,
-  FaSpotify,
-  FaDiscord,
-  FaTwitch,
-} from 'react-icons/fa';
-
-const platformConfig = {
-  instagram: {
-    name: 'Instagram',
-    icon: FaInstagram,
-    color: 'from-pink-500 to-purple-600',
-    bgColor: 'bg-gradient-to-br from-pink-500 to-purple-600',
-    description: 'Boost your Instagram presence with real followers, likes, views, and comments.',
-    features: [
-      'Real & Active Followers',
-      'High-Quality Likes',
-      'Video Views & Reels Views',
-      'Story Views',
-      'Comments & Saves',
-    ],
-  },
-  youtube: {
-    name: 'YouTube',
-    icon: FaYoutube,
-    color: 'from-red-500 to-red-700',
-    bgColor: 'bg-gradient-to-br from-red-500 to-red-700',
-    description: 'Grow your YouTube channel with subscribers, views, likes, and watch time.',
-    features: [
-      'Real Subscribers',
-      'High Retention Views',
-      'Watch Time Hours',
-      'Likes & Comments',
-      'Live Stream Views',
-    ],
-  },
-  facebook: {
-    name: 'Facebook',
-    icon: FaFacebook,
-    color: 'from-blue-600 to-blue-800',
-    bgColor: 'bg-gradient-to-br from-blue-600 to-blue-800',
-    description: 'Enhance your Facebook page with followers, likes, and engagement.',
-    features: [
-      'Page Followers',
-      'Post Likes',
-      'Video Views',
-      'Comments & Shares',
-      'Group Members',
-    ],
-  },
-  twitter: {
-    name: 'Twitter / X',
-    icon: FaTwitter,
-    color: 'from-sky-400 to-sky-600',
-    bgColor: 'bg-gradient-to-br from-sky-400 to-sky-600',
-    description: 'Increase your Twitter presence with followers, retweets, and likes.',
-    features: [
-      'Real Followers',
-      'Retweets',
-      'Likes & Favorites',
-      'Comments',
-      'Impressions',
-    ],
-  },
-  telegram: {
-    name: 'Telegram',
-    icon: FaTelegram,
-    color: 'from-sky-500 to-blue-600',
-    bgColor: 'bg-gradient-to-br from-sky-500 to-blue-600',
-    description: 'Grow your Telegram channels and groups with real members.',
-    features: [
-      'Channel Members',
-      'Group Members',
-      'Post Views',
-      'Reactions',
-      'Comments',
-    ],
-  },
-  tiktok: {
-    name: 'TikTok',
-    icon: FaTiktok,
-    color: 'from-gray-900 to-gray-700',
-    bgColor: 'bg-gradient-to-br from-gray-900 to-gray-700',
-    description: 'Boost your TikTok videos with followers, likes, and views.',
-    features: [
-      'Real Followers',
-      'Video Views',
-      'Likes & Hearts',
-      'Comments',
-      'Shares',
-    ],
-  },
-  linkedin: {
-    name: 'LinkedIn',
-    icon: FaLinkedin,
-    color: 'from-blue-700 to-blue-900',
-    bgColor: 'bg-gradient-to-br from-blue-700 to-blue-900',
-    description: 'Enhance your professional presence on LinkedIn.',
-    features: [
-      'Followers',
-      'Connections',
-      'Post Likes',
-      'Comments',
-      'Shares',
-    ],
-  },
-  spotify: {
-    name: 'Spotify',
-    icon: FaSpotify,
-    color: 'from-green-500 to-green-700',
-    bgColor: 'bg-gradient-to-br from-green-500 to-green-700',
-    description: 'Grow your Spotify streams and followers.',
-    features: [
-      'Plays / Streams',
-      'Followers',
-      'Playlist Adds',
-      'Monthly Listeners',
-      'Saves',
-    ],
-  },
-  discord: {
-    name: 'Discord',
-    icon: FaDiscord,
-    color: 'from-indigo-500 to-indigo-700',
-    bgColor: 'bg-gradient-to-br from-indigo-500 to-indigo-700',
-    description: 'Grow your Discord server with real members.',
-    features: [
-      'Server Members',
-      'Online Members',
-      'Server Boosts',
-    ],
-  },
-  twitch: {
-    name: 'Twitch',
-    icon: FaTwitch,
-    color: 'from-purple-500 to-purple-700',
-    bgColor: 'bg-gradient-to-br from-purple-500 to-purple-700',
-    description: 'Boost your Twitch channel with followers and viewers.',
-    features: [
-      'Followers',
-      'Live Viewers',
-      'Channel Views',
-      'Clip Views',
-    ],
-  },
-};
+import { platformPageConfig } from '../../config/platformAssets';
 
 const PlatformServices = () => {
   const { platform } = useParams();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const slug = platform?.toLowerCase() || '';
+  const config = platformPageConfig[slug];
   const [services, setServices] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const config = platformConfig[platform?.toLowerCase()] || null;
+  const [loading, setLoading] = useState(Boolean(config));
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
   useEffect(() => {
-    if (config) {
-      fetchServices();
-    } else {
-      setLoading(false);
-    }
-  }, [platform]);
+    let active = true;
 
-  const fetchServices = async () => {
-    try {
-      const response = await servicesAPI.getCatalog({
-        platformSlug: platform?.toLowerCase(),
-      });
-      setServices(response.data.data || []);
-    } catch (error) {
-      console.error('Error fetching services:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const fetchServices = async () => {
+      if (!config) {
+        setLoading(false);
+        return;
+      }
 
-  const handleOrder = (serviceId) => {
-    if (isAuthenticated) {
-      navigate(`/new-order?service=${serviceId}`);
-    } else {
-      navigate('/register');
-    }
-  };
+      setLoading(true);
+      try {
+        const response = await servicesAPI.getCatalog({ platformSlug: slug });
+        if (active) {
+          setServices(response.data.data || []);
+        }
+      } catch (error) {
+        if (active) {
+          setServices([]);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchServices();
+    return () => {
+      active = false;
+    };
+  }, [config, slug]);
+
+  const categories = useMemo(
+    () => [...new Map(services.map((service) => [service.categorySlug || service.category, service.category])).entries()],
+    [services]
+  );
+  const filteredServices = selectedCategory === 'all'
+    ? services
+    : services.filter((service) => (service.categorySlug || service.category) === selectedCategory);
 
   if (!config) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Không tìm thấy nền tảng</h1>
-          <Link to="/services" className="text-primary-600 hover:underline">
-            Xem tất cả dịch vụ
-          </Link>
-        </div>
+      <div className="min-h-screen bg-[var(--app-bg)] px-4 py-20 text-center text-[var(--text-primary)]">
+        <h1 className="text-2xl font-bold">Không tìm thấy nền tảng</h1>
+        <Link to="/services" className="mt-4 inline-block font-semibold text-indigo-600 dark:text-indigo-300">
+          Xem tất cả dịch vụ
+        </Link>
       </div>
     );
   }
 
-  const Icon = config.icon;
+  const handleOrder = (serviceId) => {
+    navigate(isAuthenticated ? `/new-order?service=${serviceId}` : '/login');
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navbar */}
-      <nav className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link to="/" className="text-2xl font-bold text-primary-600">ỪnAm SHOP</Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              {isAuthenticated ? (
-                <Link
-                  to="/dashboard"
-                  className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors"
-                >
-                  Bảng điều khiển
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    to="/login"
-                    className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
-                  >
-                    Đăng nhập
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors"
-                  >
-                    Bắt đầu
-                  </Link>
-                </>
-              )}
-            </div>
+    <div className="min-h-screen bg-[var(--app-bg)] text-[var(--text-primary)]">
+      <nav className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--topbar-bg)] backdrop-blur-xl">
+        <div className="page-shell flex h-16 items-center justify-between">
+          <Link to="/" className="text-xl font-black tracking-tight text-[var(--text-primary)]">ỪnAm <span className="text-indigo-600 dark:text-indigo-300">SHOP</span></Link>
+          <div className="flex items-center gap-3">
+            {isAuthenticated ? (
+              <Link to="/dashboard"><Button>Bảng điều khiển</Button></Link>
+            ) : (
+              <>
+                <Link to="/login" className="text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Đăng nhập</Link>
+                <Link to="/register"><Button>Bắt đầu</Button></Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
 
-      {/* Header */}
-      <div className={`${config.bgColor} text-white py-16`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link to="/services" className="inline-flex items-center text-white/70 hover:text-white mb-4">
-            <HiArrowLeft className="w-5 h-5 mr-2" />
-            Tất cả dịch vụ
-          </Link>
-          <div className="flex items-center gap-4 mb-4">
-            <Icon className="w-12 h-12" />
-            <h1 className="text-4xl font-bold">{config.name} Services</h1>
-          </div>
-          <p className="text-xl text-white/80 max-w-2xl">
-            {config.description}
-          </p>
-        </div>
-      </div>
+      <main className="page-shell py-8 md:py-12">
+        <Link to="/services" className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
+          <HiArrowLeft className="h-5 w-5" /> Tất cả dịch vụ
+        </Link>
 
-      {/* Features */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <HiOutlineLightningBolt className="w-8 h-8 text-yellow-500 mb-3" />
-            <h3 className="font-semibold text-gray-900 mb-1">Bắt đầu ngay</h3>
-            <p className="text-gray-500 text-sm">Đơn hàng bắt đầu trong vài phút sau khi thanh toán</p>
+        <section className="rounded-[28px] border border-[var(--border)] bg-gradient-to-br from-indigo-600 via-violet-600 to-blue-600 p-6 text-white shadow-lg shadow-indigo-500/20 md:p-10">
+          <div className="flex flex-col gap-6 md:flex-row md:items-center">
+            <PlatformIcon slug={slug} fallback={config.fallback} size="lg" />
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-100">{config.subtitle}</p>
+              <h1 className="mt-2 text-3xl font-black md:text-5xl">{config.title}</h1>
+              <p className="mt-4 max-w-2xl text-base text-indigo-100 md:text-lg">{config.description}</p>
+            </div>
           </div>
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <HiOutlineShieldCheck className="w-8 h-8 text-green-500 mb-3" />
-            <h3 className="font-semibold text-gray-900 mb-1">Chất lượng cao</h3>
-            <p className="text-gray-500 text-sm">Chất lượng premium với tương tác thực</p>
-          </div>
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <HiOutlineClock className="w-8 h-8 text-blue-500 mb-3" />
-            <h3 className="font-semibold text-gray-900 mb-1">Hỗ trợ 24/7</h3>
-            <p className="text-gray-500 text-sm">Hỗ trợ khách hàng mọi lúc mọi nơi</p>
-          </div>
-        </div>
+        </section>
 
-        {/* Available Services */}
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Dịch vụ có sẵn</h2>
-        <p className="text-gray-500 mb-6">Chọn trong danh sách dịch vụ {config.name} của chúng tôi</p>
+        <section className="mt-8 grid gap-4 md:grid-cols-3">
+          {[
+            [HiOutlineLightningBolt, 'Bắt đầu nhanh', 'Chọn dịch vụ phù hợp từ catalog hiện có.'],
+            [HiOutlineShieldCheck, 'Quản lý đơn dễ dàng', 'Theo dõi đơn hàng trong một tài khoản.'],
+            [HiOutlineClock, 'Hỗ trợ khi cần', 'Liên hệ hỗ trợ khi cần giải đáp.'],
+          ].map(([Icon, title, description]) => (
+            <Card key={title} className="p-5">
+              <Icon className="h-7 w-7 text-indigo-600 dark:text-indigo-300" />
+              <h2 className="mt-4 font-bold text-[var(--text-primary)]">{title}</h2>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">{description}</p>
+            </Card>
+          ))}
+        </section>
 
-        <div className="mb-8">
-          <div className="flex flex-wrap gap-2 mb-6">
-            {config.features.map((feature, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+        <section className="mt-12">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-300">Catalog</p>
+              <h2 className="mt-2 text-3xl font-black text-[var(--text-primary)]">Dịch vụ {config.title}</h2>
+              <p className="mt-2 text-[var(--text-secondary)]">Dữ liệu được tải trực tiếp từ catalog đang hoạt động.</p>
+            </div>
+            {categories.length > 1 && (
+              <select
+                value={selectedCategory}
+                onChange={(event) => setSelectedCategory(event.target.value)}
+                className="rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-sm text-[var(--text-primary)]"
               >
-                {feature}
-              </span>
-            ))}
+                <option value="all">Tất cả danh mục</option>
+                {categories.map(([categorySlug, categoryName]) => (
+                  <option key={categorySlug} value={categorySlug}>{categoryName}</option>
+                ))}
+              </select>
+            )}
           </div>
-        </div>
 
-        {/* Services List */}
-        {loading ? (
-          <div className="flex justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-          </div>
-        ) : services.length === 0 ? (
-          <div className="bg-white rounded-xl p-12 text-center shadow-sm">
-            <p className="text-gray-500 text-lg mb-4">Hiện chưa có dịch vụ {config.name} nào.</p>
-            <Link to="/services" className="text-primary-600 hover:underline">
-              Xem tất cả dịch vụ
-            </Link>
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            {services.map((service) => (
-              <div
-                key={service._id}
-                className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-100"
-              >
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                      {service.title}
-                    </h3>
-                    <p className="text-gray-500 text-sm">{service.description}</p>
-                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                      <span>Min: {service.minQuantity}</span>
-                      <span>Max: {service.maxQuantity}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-primary-600">
-                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(service.pricePerUnit || 0))}
+          {loading ? (
+            <div className="flex justify-center py-20"><PageLoader /></div>
+          ) : filteredServices.length === 0 ? (
+            <Card className="mt-6 p-10 text-center text-[var(--text-secondary)]">Hiện chưa có dịch vụ {config.title} nào.</Card>
+          ) : (
+            <div className="mt-6 grid gap-4 lg:grid-cols-2">
+              {filteredServices.map((service) => (
+                <Card key={service._id} className="flex flex-col justify-between gap-5 p-5 transition hover:-translate-y-0.5 hover:border-indigo-300">
+                  <div className="flex gap-4">
+                    <PlatformIcon slug={slug} fallback={config.fallback} size="sm" />
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-[var(--text-primary)]">{service.title}</h3>
+                      <p className="mt-1 text-sm text-[var(--text-secondary)]">{service.description || 'Dịch vụ đang hoạt động trên nền tảng này.'}</p>
+                      <div className="mt-3 flex flex-wrap gap-2 text-xs text-[var(--text-muted)]">
+                        <span className="rounded-full bg-[var(--surface-soft)] px-2.5 py-1">Min: {service.minQuantity}</span>
+                        <span className="rounded-full bg-[var(--surface-soft)] px-2.5 py-1">Max: {service.maxQuantity}</span>
                       </div>
-                      <div className="text-gray-500 text-sm">mỗi 1000</div>
                     </div>
-                    <button
-                      onClick={() => handleOrder(service._id)}
-                      className="flex items-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
-                    >
-                      <HiOutlineShoppingCart className="w-5 h-5" />
-                      Đặt đơn
-                    </button>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* CTA */}
-      <div className={`${config.bgColor} text-white py-12 mt-12`}>
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-2xl font-bold mb-4">Sẵn sàng tăng trưởng {config.name} của bạn?</h2>
-          <Link
-            to={isAuthenticated ? '/new-order' : '/register'}
-            className="inline-block bg-white text-gray-900 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-          >
-            Bắt đầu ngay
-          </Link>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p>&copy; 2025 ỪnAm SHOP. Bản quyền thuộc về ỪnAm SHOP.</p>
-        </div>
-      </footer>
+                  <div className="flex items-center justify-between gap-4 border-t border-[var(--border)] pt-4">
+                    <div>
+                      <div className="text-lg font-black text-indigo-600 dark:text-indigo-300">{formatWalletBalance(service.pricePerUnit)} / 1</div>
+                      <div className="text-xs text-[var(--text-muted)]">Đơn giá mỗi đơn vị</div>
+                    </div>
+                    <Button onClick={() => handleOrder(service._id)}>
+                      <HiOutlineShoppingCart className="mr-2 h-5 w-5" /> Đặt đơn
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </section>
+      </main>
     </div>
   );
 };
