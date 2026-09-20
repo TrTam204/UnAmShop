@@ -262,4 +262,147 @@ export const adminAPI = {
   deleteUser: (id) => api.delete(`/admin/users/${id}`),
 };
 
+const callAdminSupabaseRpc = async (name, args = {}) => {
+  await requireSupabaseSession();
+  const { data, error } = await supabase.rpc(name, args);
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
+
+// Dormant until AuthContext uses a Supabase session.
+export const supabaseAdminAPI = {
+  listProfiles: (params) => callAdminSupabaseRpc('admin_list_profiles', {
+    p_search: params?.search || null,
+    p_role: params?.role || null,
+    p_status: params?.status || null,
+    p_limit: params?.limit || 50,
+    p_offset: params?.offset || 0,
+  }),
+  updateProfileAccess: (userId, role, status) => callAdminSupabaseRpc('admin_update_profile_access', {
+    p_user_id: userId,
+    p_role: role,
+    p_status: status,
+  }),
+  createPlatform: (data) => callAdminSupabaseRpc('admin_create_platform', {
+    p_name: data.name,
+    p_slug: data.slug,
+    p_icon: data.icon || null,
+    p_sort_order: data.sortOrder || 0,
+  }),
+  updatePlatform: (data) => callAdminSupabaseRpc('admin_update_platform', {
+    p_platform_id: data.id,
+    p_name: data.name,
+    p_slug: data.slug,
+    p_icon: data.icon || null,
+    p_sort_order: data.sortOrder,
+    p_is_active: data.isActive,
+  }),
+  createCategory: (data) => callAdminSupabaseRpc('admin_create_category', {
+    p_platform_id: data.platformId,
+    p_name: data.name,
+    p_slug: data.slug,
+    p_icon: data.icon || null,
+    p_sort_order: data.sortOrder || 0,
+  }),
+  updateCategory: (data) => callAdminSupabaseRpc('admin_update_category', {
+    p_category_id: data.id,
+    p_platform_id: data.platformId,
+    p_name: data.name,
+    p_slug: data.slug,
+    p_icon: data.icon || null,
+    p_sort_order: data.sortOrder,
+    p_is_active: data.isActive,
+  }),
+  createService: (data) => callAdminSupabaseRpc('admin_create_service', {
+    p_category_id: data.categoryId,
+    p_name: data.name,
+    p_description: data.description || null,
+    p_selling_rate_vnd: data.sellingRateVnd,
+    p_min_quantity: data.minQuantity,
+    p_max_quantity: data.maxQuantity,
+    p_supports_refill: data.supportsRefill,
+    p_supports_cancel: data.supportsCancel,
+    p_primary_provider_service_id: data.primaryProviderServiceId,
+    p_sort_order: data.sortOrder || 0,
+  }),
+  updateService: (data) => callAdminSupabaseRpc('admin_update_service', {
+    p_service_id: data.id,
+    p_category_id: data.categoryId,
+    p_name: data.name,
+    p_description: data.description || null,
+    p_selling_rate_vnd: data.sellingRateVnd,
+    p_min_quantity: data.minQuantity,
+    p_max_quantity: data.maxQuantity,
+    p_supports_refill: data.supportsRefill,
+    p_supports_cancel: data.supportsCancel,
+    p_primary_provider_service_id: data.primaryProviderServiceId,
+    p_is_active: data.isActive,
+    p_sort_order: data.sortOrder,
+  }),
+  createProvider: (data) => callAdminSupabaseRpc('admin_create_provider', {
+    p_name: data.name,
+    p_base_url: data.baseUrl,
+    p_priority: data.priority || 100,
+  }),
+  updateProvider: (data) => callAdminSupabaseRpc('admin_update_provider', {
+    p_provider_id: data.id,
+    p_name: data.name,
+    p_base_url: data.baseUrl,
+    p_priority: data.priority,
+    p_is_active: data.isActive,
+  }),
+  createProviderService: (data) => callAdminSupabaseRpc('admin_create_provider_service', {
+    p_provider_id: data.providerId,
+    p_provider_service_id: data.providerServiceId,
+    p_raw_name: data.rawName || null,
+    p_provider_rate: data.providerRate,
+    p_provider_currency: data.providerCurrency,
+    p_min_quantity: data.minQuantity,
+    p_max_quantity: data.maxQuantity,
+    p_supports_refill: data.supportsRefill,
+    p_supports_cancel: data.supportsCancel,
+  }),
+  updateProviderService: (data) => callAdminSupabaseRpc('admin_update_provider_service', {
+    p_provider_service_uuid: data.id,
+    p_provider_id: data.providerId,
+    p_provider_service_id: data.providerServiceId,
+    p_raw_name: data.rawName || null,
+    p_provider_rate: data.providerRate,
+    p_provider_currency: data.providerCurrency,
+    p_min_quantity: data.minQuantity,
+    p_max_quantity: data.maxQuantity,
+    p_supports_refill: data.supportsRefill,
+    p_supports_cancel: data.supportsCancel,
+    p_is_active: data.isActive,
+  }),
+  listDeposits: (params) => callAdminSupabaseRpc('admin_list_deposit_requests', {
+    p_status: params?.status || null,
+    p_limit: params?.limit || 50,
+    p_offset: params?.offset || 0,
+  }),
+  approveDeposit: (depositRequestId, operationKey) => callAdminSupabaseRpc('approve_deposit', {
+    p_deposit_request_id: depositRequestId,
+    p_operation_key: operationKey || globalThis.crypto.randomUUID(),
+  }),
+  rejectDeposit: (depositRequestId, adminNote) => callAdminSupabaseRpc('reject_deposit_request', {
+    p_deposit_request_id: depositRequestId,
+    p_admin_note: adminNote || null,
+  }),
+  listOrders: (params) => callAdminSupabaseRpc('admin_list_orders', {
+    p_status: params?.status || null,
+    p_limit: params?.limit || 50,
+    p_offset: params?.offset || 0,
+  }),
+  refundOrder: (orderId, amountVnd, operationKey) => callAdminSupabaseRpc('refund_order', {
+    p_order_id: orderId,
+    p_amount_vnd: amountVnd,
+    p_operation_key: operationKey || globalThis.crypto.randomUUID(),
+  }),
+  getDashboardStats: () => callAdminSupabaseRpc('admin_dashboard_stats'),
+};
+
 export default api;
