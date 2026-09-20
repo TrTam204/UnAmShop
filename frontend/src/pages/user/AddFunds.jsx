@@ -6,13 +6,13 @@ import toast from 'react-hot-toast';
 const paymentMethods = [
   {
     id: 'vietqr',
-    title: 'VietQR / Bank Transfer',
-    description: 'Create a pending request, then transfer the exact amount using the displayed reference.',
+    title: 'VietQR / Chuyển khoản ngân hàng',
+    description: 'Tạo yêu cầu trước, sau đó chuyển đúng số tiền theo mã tham chiếu hiển thị.',
   },
   {
     id: 'zalo',
-    title: 'Contact Admin via Zalo',
-    description: 'Create a request, then contact admin so the payment can be confirmed manually.',
+    title: 'Liên hệ quản trị qua Zalo',
+    description: 'Tạo yêu cầu và liên hệ quản trị để xác nhận thanh toán thủ công.',
   },
 ];
 
@@ -76,7 +76,7 @@ const AddFunds = () => {
       if (error.code === 'SUPABASE_AUTH_REQUIRED') {
         setAuthBoundary(true);
       } else {
-        toast.error('Failed to load wallet data');
+        toast.error('Không thể tải dữ liệu ví');
       }
     } finally {
       setLoading(false);
@@ -90,7 +90,7 @@ const AddFunds = () => {
   const handleCreateRequest = async () => {
     const amountVnd = Number(amount);
     if (!Number.isInteger(amountVnd) || amountVnd <= 0) {
-      toast.error('Enter a positive whole VND amount');
+      toast.error('Vui lòng nhập số tiền VND hợp lệ');
       return;
     }
 
@@ -100,12 +100,12 @@ const AddFunds = () => {
       setCreatedDeposit(deposit);
       setAmount('');
       await loadWallet();
-      toast.success('YĂªu cáº§u náº¡p tiá»n Ä‘Ă£ Ä‘Æ°á»£c táº¡o');
+      toast.success('Yêu cầu nạp tiền đã được tạo');
     } catch (error) {
       if (error.code === 'SUPABASE_AUTH_REQUIRED') {
         setAuthBoundary(true);
       } else {
-        toast.error(error.message || 'Táº¡o yĂªu cáº§u náº¡p tiá»n tháº¥t báº¡i');
+        toast.error(error.message || 'Tạo yêu cầu nạp tiền thất bại');
       }
     } finally {
       setSubmitting(false);
@@ -120,9 +120,9 @@ const AddFunds = () => {
         setCreatedDeposit(null);
       }
       await loadWallet();
-      toast.success('YĂªu cáº§u náº¡p tiá»n Ä‘Ă£ Ä‘Æ°á»£c há»§y');
+      toast.success('Yêu cầu nạp tiền đã được hủy');
     } catch (error) {
-      toast.error(error.message || 'Há»§y yĂªu cáº§u náº¡p tiá»n tháº¥t báº¡i');
+      toast.error(error.message || 'Hủy yêu cầu nạp tiền thất bại');
     } finally {
       setCancellingId(null);
     }
@@ -130,74 +130,74 @@ const AddFunds = () => {
 
   const copyReference = async (reference) => {
     await navigator.clipboard.writeText(reference);
-    toast.success('MĂ£ chuyá»ƒn khoáº£n Ä‘Ă£ Ä‘Æ°á»£c sao chĂ©p');
+    toast.success('Mã tham chiếu đã được sao chép');
   };
 
   const transactionColumns = [
     {
       key: 'direction',
-      title: 'Loáº¡i',
+      title: 'Loại',
       render: (direction) => (
         <Badge variant={direction === 'credit' ? 'success' : 'danger'}>
-          {direction === 'credit' ? 'TĂ­n dá»¥ng' : 'Ghi ná»£'}
+          {direction === 'credit' ? 'Tín dụng' : 'Ghi nợ'}
         </Badge>
       ),
     },
-    { key: 'amount_vnd', title: 'Sá»‘ tiá»n', render: (value) => formatVnd(value) },
-    { key: 'description', title: 'MĂ´ táº£' },
-    { key: 'balance_after_vnd', title: 'Sá»‘ dÆ° sau', render: (value) => formatVnd(value) },
-    { key: 'created_at', title: 'NgĂ y', render: (value) => new Date(value).toLocaleString() },
+    { key: 'amount_vnd', title: 'Số tiền', render: (value) => formatVnd(value) },
+    { key: 'description', title: 'Mô tả' },
+    { key: 'balance_after_vnd', title: 'Số dư sau', render: (value) => formatVnd(value) },
+    { key: 'created_at', title: 'Ngày', render: (value) => new Date(value).toLocaleString() },
   ];
 
   return (
     <div className="fade-in">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Náº¡p tiá»n</h1>
-        <p className="text-gray-500 mt-1">Náº¡p VND qua VietQR hoáº·c liĂªn há»‡ quáº£n trá»‹ qua Zalo.</p>
+        <h1 className="text-2xl font-bold text-gray-900">Nạp tiền</h1>
+        <p className="mt-1 text-gray-500">Nạp VND qua VietQR hoặc liên hệ quản trị qua Zalo.</p>
       </div>
 
       {authBoundary && (
-        <Card className="mb-6">
-          <p className="font-semibold text-gray-900">Supabase Auth is required for wallet deposits.</p>
-          <p className="text-sm text-gray-600 mt-1">
-            The current app login still uses the legacy Express session. Deposits remain disabled until the Supabase Auth cutover is enabled; no anonymous wallet path is used.
+        <Card className="mb-6 border-amber-200 bg-amber-50 text-amber-900">
+          <p className="font-semibold">Tính năng nạp tiền đang chờ xác thực tài khoản.</p>
+          <p className="mt-1 text-sm text-amber-700">
+            Vui lòng thử lại sau khi tài khoản của bạn được xác thực thành công.
           </p>
         </Card>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1 space-y-6">
-          <Card title="Sá»‘ dÆ° hiá»‡n táº¡i">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-1">
+          <Card title="Số dư hiện tại">
             <p className="text-3xl font-bold text-primary-600">
-              {authBoundary ? 'Unavailable' : formatVnd(wallet.balance)}
+              {authBoundary ? 'Không khả dụng' : formatVnd(wallet.balance)}
             </p>
           </Card>
 
-          <Card title="PhÆ°Æ¡ng thá»©c náº¡p">
+          <Card title="Phương thức nạp">
             <div className="space-y-3">
               {paymentMethods.map((method) => (
                 <button
                   key={method.id}
                   type="button"
                   onClick={() => setPaymentMethod(method.id)}
-                  className={`w-full text-left rounded-lg border p-4 transition-colors ${
+                  className={`w-full rounded-lg border p-4 text-left transition-colors ${
                     paymentMethod === method.id
                       ? 'border-primary-600 bg-primary-50'
                       : 'border-gray-200 hover:border-primary-300'
                   }`}
                 >
                   <p className="font-semibold text-gray-900">{method.title}</p>
-                  <p className="text-sm text-gray-500 mt-1">{method.description}</p>
+                  <p className="mt-1 text-sm text-gray-500">{method.description}</p>
                 </button>
               ))}
             </div>
 
             <Input
-              label="Sá»‘ tiá»n (VND)"
+              label="Số tiền (VND)"
               type="number"
               min="1"
               step="1"
-              placeholder="Nháº­p sá»‘ tiá»n"
+              placeholder="Nhập số tiền"
               value={amount}
               onChange={(event) => setAmount(event.target.value)}
               className="mt-5"
@@ -208,59 +208,62 @@ const AddFunds = () => {
               onClick={handleCreateRequest}
               loading={submitting}
               disabled={authBoundary}
-              className="w-full mt-5"
+              className="mt-5 w-full"
               size="lg"
             >
-              Táº¡o yĂªu cáº§u náº¡p tiá»n
+              Tạo yêu cầu nạp tiền
             </Button>
           </Card>
         </div>
 
-        <div className="lg:col-span-2 space-y-6">
+        <div className="space-y-6 lg:col-span-2">
           {createdDeposit && (
-            <Card title="HÆ°á»›ng dáº«n náº¡p tiá»n">
+            <Card title="Hướng dẫn nạp tiền">
               <div className="space-y-4">
                 <p className="text-sm text-gray-600">
-                  Tráº¡ng thĂ¡i yĂªu cáº§u: <Badge variant={statusVariants[createdDeposit.status] || 'default'}>{createdDeposit.status}</Badge>
+                  Trạng thái yêu cầu:{' '}
+                  <Badge variant={statusVariants[createdDeposit.status] || 'default'}>{createdDeposit.status}</Badge>
                 </p>
-                <p className="font-semibold">Sá»‘ tiá»n: {formatVnd(createdDeposit.amount_vnd)}</p>
+                <p className="font-semibold">Số tiền: {formatVnd(createdDeposit.amount_vnd)}</p>
 
                 {createdDeposit.payment_method === 'vietqr' ? (
-                  <div className="flex flex-col sm:flex-row gap-5 items-start">
+                  <div className="flex flex-col items-start gap-5 sm:flex-row">
                     {qrUrl ? (
-                      <img src={qrUrl} alt="VietQR payment QR code" className="w-56 h-56 border rounded-lg" />
+                      <img src={qrUrl} alt="VietQR payment QR code" className="h-56 w-56 rounded-lg border" />
                     ) : (
-                      <p className="text-sm text-amber-700 bg-amber-50 rounded-lg p-4">
-                        VietQR destination is not configured for this deployment.
+                      <p className="rounded-lg bg-amber-50 p-4 text-sm text-amber-700">
+                        Mã QR chưa được cấu hình cho môi trường hiện tại.
                       </p>
                     )}
                     <div className="space-y-2 text-sm">
-                      <p>Chuyá»ƒn Ä‘Ăºng sá»‘ tiá»n Ä‘áº¿n ngĂ¢n hĂ ng Ä‘Ă£ cáº¥u hĂ¬nh.</p>
-                      <p>MĂ£ tham chiáº¿u: <strong>{createdDeposit.payment_reference || createdDeposit.id}</strong></p>
+                      <p>Chuyển đúng số tiền đến ngân hàng đã cấu hình.</p>
+                      <p>
+                        Mã tham chiếu: <strong>{createdDeposit.payment_reference || createdDeposit.id}</strong>
+                      </p>
                       <Button
                         variant="secondary"
                         onClick={() => copyReference(createdDeposit.payment_reference || createdDeposit.id)}
                       >
-                        Sao chĂ©p mĂ£
+                        Sao chép mã
                       </Button>
                     </div>
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <p className="text-sm text-gray-600">LiĂªn há»‡ quáº£n trá»‹ qua Zalo vĂ  gá»­i kĂ¨m mĂ£ yĂªu cáº§u nĂ y:</p>
-                    <p className="font-mono text-sm break-all">{createdDeposit.id}</p>
+                    <p className="text-sm text-gray-600">Liên hệ quản trị qua Zalo và gửi kèm mã yêu cầu này:</p>
+                    <p className="break-all font-mono text-sm">{createdDeposit.id}</p>
                     {zaloContactUrl ? (
                       <a
                         href={zaloContactUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                        className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
                       >
-                        LiĂªn há»‡ quáº£n trá»‹ qua Zalo
+                        Liên hệ quản trị qua Zalo
                       </a>
                     ) : (
-                      <p className="text-sm text-amber-700 bg-amber-50 rounded-lg p-4">
-                        Zalo contact destination is not configured for this deployment.
+                      <p className="rounded-lg bg-amber-50 p-4 text-sm text-amber-700">
+                        Liên kết Zalo chưa được cấu hình cho môi trường hiện tại.
                       </p>
                     )}
                   </div>
@@ -269,7 +272,7 @@ const AddFunds = () => {
             </Card>
           )}
 
-          <Card title="Lá»‹ch sá»­ náº¡p tiá»n">
+          <Card title="Lịch sử nạp tiền">
             {loading ? (
               <PageLoader />
             ) : (
@@ -277,11 +280,11 @@ const AddFunds = () => {
                 <table className="min-w-full text-sm">
                   <thead>
                     <tr className="border-b text-left text-gray-500">
-                      <th className="py-3 pr-4">PhÆ°Æ¡ng thá»©c</th>
-                      <th className="py-3 pr-4">Sá»‘ tiá»n</th>
-                      <th className="py-3 pr-4">Tráº¡ng thĂ¡i</th>
-                      <th className="py-3 pr-4">NgĂ y</th>
-                      <th className="py-3">HĂ nh Ä‘á»™ng</th>
+                      <th className="py-3 pr-4">Phương thức</th>
+                      <th className="py-3 pr-4">Số tiền</th>
+                      <th className="py-3 pr-4">Trạng thái</th>
+                      <th className="py-3 pr-4">Ngày</th>
+                      <th className="py-3">Hành động</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -289,7 +292,9 @@ const AddFunds = () => {
                       <tr key={deposit.id} className="border-b last:border-0">
                         <td className="py-3 pr-4">{deposit.payment_method === 'vietqr' ? 'VietQR' : 'Zalo Admin'}</td>
                         <td className="py-3 pr-4">{formatVnd(deposit.amount_vnd)}</td>
-                        <td className="py-3 pr-4"><Badge variant={statusVariants[deposit.status] || 'default'}>{deposit.status}</Badge></td>
+                        <td className="py-3 pr-4">
+                          <Badge variant={statusVariants[deposit.status] || 'default'}>{deposit.status}</Badge>
+                        </td>
                         <td className="py-3 pr-4">{new Date(deposit.created_at).toLocaleString()}</td>
                         <td className="py-3">
                           {deposit.status === 'pending' && (
@@ -298,7 +303,7 @@ const AddFunds = () => {
                               loading={cancellingId === deposit.id}
                               onClick={() => handleCancel(deposit.id)}
                             >
-                              Há»§y
+                              Hủy
                             </Button>
                           )}
                         </td>
@@ -307,14 +312,18 @@ const AddFunds = () => {
                   </tbody>
                 </table>
                 {!wallet.deposits.length && !authBoundary && (
-                  <p className="py-8 text-center text-gray-500">ChÆ°a cĂ³ yĂªu cáº§u náº¡p tiá»n nĂ o.</p>
+                  <p className="py-8 text-center text-gray-500">Chưa có yêu cầu nạp tiền nào.</p>
                 )}
               </div>
             )}
           </Card>
 
-          <Card title="Lá»‹ch sá»­ giao dá»‹ch">
-            <Table columns={transactionColumns} data={wallet.transactions} emptyMessage={authBoundary ? 'Sáº½ kháº£ dá»¥ng sau khi Supabase Auth Ä‘Æ°á»£c kĂ­ch hoáº¡t' : 'ChÆ°a cĂ³ giao dá»‹ch nĂ o'} />
+          <Card title="Lịch sử giao dịch">
+            <Table
+              columns={transactionColumns}
+              data={wallet.transactions}
+              emptyMessage={authBoundary ? 'Dữ liệu sẽ hiển thị khi tài khoản được xác thực.' : 'Chưa có giao dịch nào'}
+            />
           </Card>
         </div>
       </div>

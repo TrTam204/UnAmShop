@@ -2,41 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  color-scheme: light;
+  --brand-50: #f0f9ff;
+  --brand-100: #d9f0ff;
+  --brand-500: #0ea5e9;
+  --brand-600: #0284c7;
+  --brand-700: #0369a1;
+  --brand-900: #0f172a;
+  --surface: #f8fafc;
+  --surface-strong: #ffffff;
+  --text: #0f172a;
+  --muted: #475569;
+  --line: #e2e8f0;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: #f1f5f9;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: linear-gradient(180deg, #f8fafc 0%, #eef6ff 100%);
+  color: var(--text);
   min-height: 100vh;
 }
 
-/* Custom scrollbar */
+#root {
+  min-height: 100vh;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #e2e8f0;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: #94a3b8;
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #64748b;
 }
 
-/* Loading spinner */
 .spinner {
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #3b82f6;
+  border: 3px solid rgba(148, 163, 184, 0.2);
+  border-top-color: #0ea5e9;
   border-radius: 50%;
   width: 24px;
   height: 24px;
@@ -44,25 +78,53 @@ body {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-/* Fade in animation */
 .fade-in {
-  animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn 0.25s ease-out;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Legal pages styling */
+.brand-wordmark {
+  letter-spacing: -0.04em;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.brand-wordmark span {
+  color: #0284c7;
+}
+
+.page-shell {
+  width: min(100%, 1280px);
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.panel {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 1.25rem;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.06);
+}
+
 .legal-content h2 {
   font-size: 1.25rem;
-  font-weight: 600;
-  color: #111827;
+  font-weight: 700;
+  color: #0f172a;
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
 }
@@ -72,13 +134,14 @@ body {
 }
 
 .legal-content p {
-  color: #4b5563;
+  color: #475569;
   margin-bottom: 1rem;
   line-height: 1.75;
 }
 
-.legal-content ul, .legal-content ol {
-  color: #4b5563;
+.legal-content ul,
+.legal-content ol {
+  color: #475569;
   margin-bottom: 1rem;
   padding-left: 1.5rem;
 }

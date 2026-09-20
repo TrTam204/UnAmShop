@@ -7,13 +7,13 @@ const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-slate-100 text-slate-900">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      
-      <div className="lg:ml-64">
+
+      <div className="lg:ml-72">
         <Navbar onMenuClick={() => setSidebarOpen(true)} />
-        
-        <main className="p-4 lg:p-6">
+
+        <main className="page-shell py-5 lg:py-7">
           <Outlet />
         </main>
       </div>

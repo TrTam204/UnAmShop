@@ -5,36 +5,31 @@ const Navbar = ({ onMenuClick }) => {
   const { user } = useAuth();
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
-      <div className="flex items-center justify-between px-4 py-3 lg:px-6">
-        {/* Menu button */}
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur-md">
+      <div className="page-shell flex items-center justify-between py-3">
         <button
-          className="lg:hidden text-gray-600 hover:text-gray-900"
+          className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white p-2 text-slate-700 shadow-sm lg:hidden"
           onClick={onMenuClick}
+          aria-label="Mở menu"
         >
-          <HiOutlineMenuAlt2 className="w-6 h-6" />
+          <HiOutlineMenuAlt2 className="h-5 w-5" />
         </button>
 
-        {/* Right section */}
-        <div className="flex items-center space-x-4 ml-auto">
-          {/* Notifications */}
-          <button className="relative text-gray-600 hover:text-gray-900">
-            <HiOutlineBell className="w-6 h-6" />
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+        <div className="ml-auto flex items-center gap-3">
+          <button className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition-colors hover:text-slate-900">
+            <HiOutlineBell className="h-5 w-5" />
+            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-semibold text-white">
               0
             </span>
           </button>
 
-          {/* User avatar */}
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-semibold text-sm">
-                {user?.name?.charAt(0).toUpperCase()}
-              </span>
+          <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 shadow-sm">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 to-blue-600 text-sm font-bold text-white shadow-sm">
+              {user?.name?.charAt(0)?.toUpperCase() || 'U'}
             </div>
             <div className="hidden md:block">
-              <p className="text-sm font-medium text-gray-900">{user?.name}</p>
-              <p className="text-xs text-gray-500">{user?.email}</p>
+              <p className="text-sm font-semibold text-slate-900">{user?.name}</p>
+              <p className="text-[11px] text-slate-500">{user?.email}</p>
             </div>
           </div>
         </div>
