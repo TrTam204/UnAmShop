@@ -39,8 +39,8 @@ const Services = () => {
   return (
     <div className="fade-in">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Services</h1>
-        <p className="text-gray-500 mt-1">Browse all available SMM services</p>
+        <h1 className="text-2xl font-bold text-gray-900">Dịch vụ</h1>
+        <p className="text-gray-500 mt-1">Duyệt tất cả dịch vụ SMM có sẵn</p>
       </div>
 
       {/* Filters */}
@@ -49,7 +49,7 @@ const Services = () => {
           <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
-            placeholder="Search services..."
+            placeholder="Tìm kiếm dịch vụ..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -64,7 +64,7 @@ const Services = () => {
                 : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
             }`}
           >
-            All
+            Tất cả
           </button>
           {categories.map((category) => (
             <button
@@ -101,23 +101,23 @@ const Services = () => {
               </div>
               <div className="flex items-center gap-6">
                 <div className="text-center">
-                  <p className="text-xs text-gray-500">Rate</p>
-                  <p className="font-bold text-primary-600">₹{service.rate}</p>
-                  <p className="text-xs text-gray-400">per 1000</p>
+                  <p className="text-xs text-gray-500">Giá</p>
+                  <p className="font-bold text-primary-600">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(service.rate || 0))}</p>
+                  <p className="text-xs text-gray-400">mỗi 1000</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-gray-500">Min</p>
+                  <p className="text-xs text-gray-500">Tối thiểu</p>
                   <p className="font-semibold">{service.min}</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-gray-500">Max</p>
+                  <p className="text-xs text-gray-500">Tối đa</p>
                   <p className="font-semibold">{service.max}</p>
                 </div>
                 <a
                   href={`/new-order?service=${service._id}`}
                   className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                 >
-                  Order
+                  Đặt đơn
                 </a>
               </div>
             </div>
@@ -127,7 +127,7 @@ const Services = () => {
 
       {filteredServices.length === 0 && (
         <div className="text-center py-12 text-gray-500">
-          No services found matching your criteria
+          Không tìm thấy dịch vụ nào phù hợp
         </div>
       )}
     </div>

@@ -39,7 +39,7 @@ const AdminOrders = () => {
         total: response.data.total,
       });
     } catch (error) {
-      toast.error('Failed to fetch orders');
+      toast.error('Không thể tải đơn hàng');
     } finally {
       setLoading(false);
     }
@@ -48,22 +48,22 @@ const AdminOrders = () => {
   const handleStatusChange = async (orderId, newStatus) => {
     try {
       await ordersAPI.updateStatus(orderId, newStatus);
-      toast.success('Order status updated');
+      toast.success('Cập nhật trạng thái đơn hàng thành công');
       fetchOrders();
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Failed to update status');
+      toast.error(error.response?.data?.error || 'Cập nhật trạng thái thất bại');
     }
   };
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      pending: { variant: 'warning', label: 'Pending' },
-      processing: { variant: 'info', label: 'Processing' },
-      in_progress: { variant: 'info', label: 'In Progress' },
-      completed: { variant: 'success', label: 'Completed' },
-      partial: { variant: 'warning', label: 'Partial' },
-      cancelled: { variant: 'danger', label: 'Cancelled' },
-      refunded: { variant: 'danger', label: 'Refunded' },
+      pending: { variant: 'warning', label: 'Đang chờ' },
+      processing: { variant: 'info', label: 'Đang xử lý' },
+      in_progress: { variant: 'info', label: 'Đang tiến hành' },
+      completed: { variant: 'success', label: 'Hoàn thành' },
+      partial: { variant: 'warning', label: 'Một phần' },
+      cancelled: { variant: 'danger', label: 'Đã hủy' },
+      refunded: { variant: 'danger', label: 'Hoàn tiền' },
     };
 
     const config = statusConfig[status] || { variant: 'default', label: status };
@@ -71,25 +71,25 @@ const AdminOrders = () => {
   };
 
   const statusOptions = [
-    { value: '', label: 'All Status' },
-    { value: 'pending', label: 'Pending' },
-    { value: 'processing', label: 'Processing' },
-    { value: 'in_progress', label: 'In Progress' },
-    { value: 'completed', label: 'Completed' },
-    { value: 'partial', label: 'Partial' },
-    { value: 'cancelled', label: 'Cancelled' },
-    { value: 'refunded', label: 'Refunded' },
+    { value: '', label: 'Tất cả trạng thái' },
+    { value: 'pending', label: 'Đang chờ' },
+    { value: 'processing', label: 'Đang xử lý' },
+    { value: 'in_progress', label: 'Đang tiến hành' },
+    { value: 'completed', label: 'Hoàn thành' },
+    { value: 'partial', label: 'Một phần' },
+    { value: 'cancelled', label: 'Đã hủy' },
+    { value: 'refunded', label: 'Hoàn tiền' },
   ];
 
   const columns = [
     {
       key: '_id',
-      title: 'Order ID',
+      title: 'Mã đơn',
       render: (id) => <span className="font-mono text-xs">#{id.slice(-8)}</span>,
     },
     {
       key: 'user',
-      title: 'User',
+      title: 'Người dùng',
       render: (_, row) => (
         <div>
           <p className="font-medium">{row.user?.name || 'N/A'}</p>
@@ -99,7 +99,7 @@ const AdminOrders = () => {
     },
     {
       key: 'service',
-      title: 'Service',
+      title: 'Dịch vụ',
       render: (_, row) => (
         <div className="max-w-[200px]">
           <p className="font-medium truncate">{row.service?.title || 'N/A'}</p>
@@ -109,7 +109,7 @@ const AdminOrders = () => {
     },
     {
       key: 'link',
-      title: 'Link',
+      title: 'Liên kết',
       render: (link) => (
         <a
           href={link}
@@ -121,15 +121,15 @@ const AdminOrders = () => {
         </a>
       ),
     },
-    { key: 'quantity', title: 'Qty' },
+    { key: 'quantity', title: 'SL' },
     {
       key: 'amount',
-      title: 'Amount',
-      render: (amount) => `₹${amount.toFixed(2)}`,
+      title: 'Số tiền',
+      render: (amount) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(amount || 0)),
     },
     {
       key: 'status',
-      title: 'Status',
+      title: 'Trạng thái',
       render: (status, row) => (
         <select
           value={status}
@@ -146,14 +146,14 @@ const AdminOrders = () => {
     },
     {
       key: 'providerOrderId',
-      title: 'Provider ID',
+      title: 'Mã nhà cung cấp',
       render: (id) => (
         <span className="font-mono text-xs">{id || '-'}</span>
       ),
     },
     {
       key: 'createdAt',
-      title: 'Date',
+      title: 'Ngày',
       render: (date) => new Date(date).toLocaleString(),
     },
   ];
@@ -162,9 +162,9 @@ const AdminOrders = () => {
     <div className="fade-in">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">All Orders</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Tất cả đơn hàng</h1>
           <p className="text-gray-500 mt-1">
-            Manage and track all customer orders
+            Quản lý và theo dõi mọi đơn hàng của khách hàng
           </p>
         </div>
         <div className="mt-4 md:mt-0 w-full md:w-48">
@@ -188,7 +188,7 @@ const AdminOrders = () => {
               <Table
                 columns={columns}
                 data={orders}
-                emptyMessage="No orders found"
+                emptyMessage="Không tìm thấy đơn hàng nào"
               />
             </div>
             <Pagination

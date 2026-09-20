@@ -31,7 +31,7 @@ const NewOrder = () => {
       const uniqueCategories = [...new Set(response.data.data.map((s) => s.category))];
       setCategories(uniqueCategories);
     } catch (error) {
-      toast.error('Failed to fetch services');
+      toast.error('Không thể tải danh sách dịch vụ');
     } finally {
       setLoading(false);
     }
@@ -60,19 +60,19 @@ const NewOrder = () => {
     e.preventDefault();
 
     if (!formData.serviceId || !formData.link || !formData.quantity) {
-      toast.error('Please fill all fields');
+      toast.error('Vui lòng điền đầy đủ thông tin');
       return;
     }
 
     const quantity = parseInt(formData.quantity);
     if (quantity < selectedService.min || quantity > selectedService.max) {
-      toast.error(`Quantity must be between ${selectedService.min} and ${selectedService.max}`);
+      toast.error(`Số lượng phải nằm trong khoảng ${selectedService.min} đến ${selectedService.max}`);
       return;
     }
 
     const total = calculateTotal();
     if (total > user.walletBalance) {
-      toast.error('Insufficient balance. Please add funds.');
+      toast.error('Số dư không đủ. Vui lòng nạp tiền.');
       return;
     }
 
@@ -88,10 +88,10 @@ const NewOrder = () => {
       // Update user balance
       updateUser({ walletBalance: user.walletBalance - total });
 
-      toast.success('Order placed successfully!');
+      toast.success('Đặt đơn thành công!');
       navigate('/orders');
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Failed to place order');
+      toast.error(error.response?.data?.error || 'Đặt đơn thất bại');
     } finally {
       setSubmitting(false);
     }
@@ -102,52 +102,52 @@ const NewOrder = () => {
   return (
     <div className="fade-in max-w-3xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">New Order</h1>
-        <p className="text-gray-500 mt-1">Place a new SMM service order</p>
+        <h1 className="text-2xl font-bold text-gray-900">Đơn mới</h1>
+        <p className="text-gray-500 mt-1">Đặt một đơn dịch vụ SMM mới</p>
       </div>
 
       <Card>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Category */}
           <Select
-            label="Category"
+            label="Danh mục"
             value={selectedCategory}
             onChange={(e) => {
               setSelectedCategory(e.target.value);
               setSelectedService(null);
               setFormData((prev) => ({ ...prev, serviceId: '', quantity: '' }));
             }}
-            placeholder="Select a category"
+            placeholder="Chọn danh mục"
             options={categories.map((cat) => ({ value: cat, label: cat }))}
           />
 
           {/* Service */}
           <Select
-            label="Service"
+            label="Dịch vụ"
             value={formData.serviceId}
             onChange={(e) => handleServiceChange(e.target.value)}
-            placeholder="Select a service"
+            placeholder="Chọn dịch vụ"
             options={filteredServices.map((service) => ({
               value: service._id,
-              label: `${service.title} - ₹${service.rate}/1000`,
+              label: `${service.title} - ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(service.rate || 0))}/1000`,
             }))}
           />
 
           {/* Service Details */}
           {selectedService && (
             <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="font-medium text-gray-900 mb-2">Service Details</h3>
+              <h3 className="font-medium text-gray-900 mb-2">Chi tiết dịch vụ</h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-gray-500">Rate:</span>
-                  <span className="ml-2 font-medium">₹{selectedService.rate}/1000</span>
+                  <span className="text-gray-500">Giá:</span>
+                  <span className="ml-2 font-medium">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(selectedService.rate || 0))}/1000</span>
                 </div>
                 <div>
-                  <span className="text-gray-500">Min:</span>
+                  <span className="text-gray-500">Tối thiểu:</span>
                   <span className="ml-2 font-medium">{selectedService.min}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500">Max:</span>
+                  <span className="text-gray-500">Tối đa:</span>
                   <span className="ml-2 font-medium">{selectedService.max}</span>
                 </div>
               </div>
@@ -156,9 +156,9 @@ const NewOrder = () => {
 
           {/* Link */}
           <Input
-            label="Link"
+            label="Liên kết"
             type="url"
-            placeholder="Enter the target link"
+            placeholder="Nhập liên kết mục tiêu"
             value={formData.link}
             onChange={(e) => setFormData((prev) => ({ ...prev, link: e.target.value }))}
             required
@@ -166,9 +166,9 @@ const NewOrder = () => {
 
           {/* Quantity */}
           <Input
-            label="Quantity"
+            label="Số lượng"
             type="number"
-            placeholder={`Enter quantity (${selectedService?.min || 0} - ${selectedService?.max || 0})`}
+            placeholder={`Nhập số lượng (${selectedService?.min || 0} - ${selectedService?.max || 0})`}
             value={formData.quantity}
             onChange={(e) => setFormData((prev) => ({ ...prev, quantity: e.target.value }))}
             min={selectedService?.min}
@@ -180,15 +180,15 @@ const NewOrder = () => {
           <div className="bg-primary-50 rounded-lg p-4">
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-sm text-gray-600">Total Amount</p>
+                <p className="text-sm text-gray-600">Tổng tiền</p>
                 <p className="text-2xl font-bold text-primary-600">
-                  ₹{calculateTotal().toFixed(2)}
+                  {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(calculateTotal() || 0))}
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-sm text-gray-600">Your Balance</p>
+                <p className="text-sm text-gray-600">Số dư của bạn</p>
                 <p className={`text-lg font-semibold ${user.walletBalance >= calculateTotal() ? 'text-green-600' : 'text-red-600'}`}>
-                  ₹{user.walletBalance.toFixed(2)}
+                  {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(user.walletBalance || 0))}
                 </p>
               </div>
             </div>
@@ -202,14 +202,14 @@ const NewOrder = () => {
             size="lg"
             disabled={!selectedService || calculateTotal() > user.walletBalance}
           >
-            Place Order
+            Đặt đơn
           </Button>
 
           {calculateTotal() > user.walletBalance && (
             <p className="text-center text-sm text-red-500">
-              Insufficient balance.{' '}
+              Số dư không đủ.{' '}
               <a href="/add-funds" className="underline">
-                Add funds
+                Nạp tiền
               </a>
             </p>
           )}

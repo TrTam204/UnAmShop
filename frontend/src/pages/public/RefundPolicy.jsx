@@ -8,11 +8,11 @@ const RefundPolicy = () => {
       <nav className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link to="/" className="text-2xl font-bold text-primary-600">SMM Panel</Link>
+            <Link to="/" className="text-2xl font-bold text-primary-600">ỪnAm SHOP</Link>
             <div className="flex items-center space-x-4">
-              <Link to="/login" className="text-gray-600 hover:text-gray-900 font-medium">Login</Link>
+              <Link to="/login" className="text-gray-600 hover:text-gray-900 font-medium">Đăng nhập</Link>
               <Link to="/register" className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700">
-                Get Started
+                Bắt đầu
               </Link>
             </div>
           </div>
@@ -24,89 +24,84 @@ const RefundPolicy = () => {
         <div className="max-w-4xl mx-auto px-4">
           <Link to="/" className="inline-flex items-center text-primary-200 hover:text-white mb-4">
             <HiArrowLeft className="w-5 h-5 mr-2" />
-            Back to Home
+            Quay lại trang chủ
           </Link>
-          <h1 className="text-4xl font-bold">Refund Policy</h1>
-          <p className="text-primary-100 mt-2">Last updated: December 4, 2025</p>
+          <h1 className="text-4xl font-bold">Chính sách hoàn tiền</h1>
+          <p className="text-primary-100 mt-2">Cập nhật lần cuối: 4 tháng 12, 2025</p>
         </div>
       </div>
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 py-12">
         <div className="bg-white rounded-xl shadow-sm p-8 legal-content">
-          <h2>1. Refund Eligibility</h2>
+          <h2>1. Điều kiện hoàn tiền</h2>
           <p>
-            We want you to be satisfied with our services. Refunds may be issued under the 
-            following circumstances:
+            Chúng tôi muốn bạn hài lòng với dịch vụ của mình. Hoàn tiền có thể được cấp trong các trường hợp sau:
           </p>
           <ul>
-            <li>Order not started within 72 hours</li>
-            <li>Wrong service delivered</li>
-            <li>Duplicate charges</li>
-            <li>Technical errors on our end</li>
+            <li>Đơn hàng chưa bắt đầu trong vòng 72 giờ</li>
+            <li>Cung cấp sai dịch vụ</li>
+            <li>Thanh toán trùng lặp</li>
+            <li>Lỗi kỹ thuật từ phía chúng tôi</li>
           </ul>
 
-          <h2>2. Non-Refundable Cases</h2>
-          <p>Refunds will NOT be issued for:</p>
+          <h2>2. Trường hợp không hoàn tiền</h2>
+          <p>Hoàn tiền sẽ KHÔNG được cấp cho:</p>
           <ul>
-            <li>Orders that have already been completed or partially completed</li>
-            <li>Drop in followers/likes after delivery (this is normal and expected)</li>
-            <li>Account suspension or deletion by the social media platform</li>
-            <li>Incorrect link or information provided by the user</li>
-            <li>Change of mind after order placement</li>
-            <li>Services purchased during promotional offers (unless otherwise stated)</li>
+            <li>Đơn hàng đã hoàn thành hoặc đã xử lý một phần</li>
+            <li>Giảm follower/like/view sau khi giao hàng (đây là điều bình thường)</li>
+            <li>Tài khoản bị khóa hoặc xóa bởi nền tảng mạng xã hội</li>
+            <li>Liên kết hoặc thông tin người dùng cung cấp không chính xác</li>
+            <li>Thay đổi ý định sau khi đặt đơn</li>
+            <li>Dịch vụ mua trong chương trình khuyến mãi (trừ khi có quy định khác)</li>
           </ul>
 
-          <h2>3. Partial Refunds</h2>
+          <h2>3. Hoàn tiền một phần</h2>
           <p>
-            If an order is partially completed and cannot be fulfilled, a partial refund may be 
-            issued for the undelivered portion. The refund amount will be calculated based on 
-            the remaining quantity.
+            Nếu một đơn hàng chỉ được thực hiện một phần và không thể hoàn thành, khoản hoàn tiền một phần có thể được cấp
+            cho phần chưa giao. Số tiền hoàn lại sẽ được tính dựa trên số lượng còn lại.
           </p>
 
-          <h2>4. Wallet Credits</h2>
+          <h2>4. Tín dụng ví</h2>
           <p>
-            In most cases, approved refunds will be credited to your SMM Panel wallet balance 
-            rather than the original payment method. Wallet credits can be used for future orders.
+            Trong hầu hết các trường hợp, khoản hoàn tiền được phê duyệt sẽ được cộng vào số dư ví ỪnAm SHOP thay vì phương
+            thức thanh toán ban đầu. Tín dụng ví có thể được sử dụng cho đơn hàng trong tương lai.
           </p>
 
-          <h2>5. How to Request a Refund</h2>
-          <p>To request a refund:</p>
+          <h2>5. Cách yêu cầu hoàn tiền</h2>
+          <p>Để yêu cầu hoàn tiền:</p>
           <ol>
-            <li>Log in to your account</li>
-            <li>Go to your Order History</li>
-            <li>Find the order in question</li>
-            <li>Contact our support team with your order ID and reason for refund</li>
+            <li>Đăng nhập vào tài khoản của bạn</li>
+            <li>Vào Lịch sử đơn hàng</li>
+            <li>Tìm đơn hàng cần hoàn tiền</li>
+            <li>Liên hệ đội ngũ hỗ trợ với mã đơn và lý do hoàn tiền</li>
           </ol>
 
-          <h2>6. Processing Time</h2>
+          <h2>6. Thời gian xử lý</h2>
           <p>
-            Refund requests are typically processed within 24-48 business hours. If approved, 
-            wallet credits will be added immediately. Bank refunds (if applicable) may take 
-            5-7 business days to reflect in your account.
+            Yêu cầu hoàn tiền thường được xử lý trong vòng 24-48 giờ làm việc. Nếu được phê duyệt, tín dụng ví sẽ được cộng
+            ngay lập tức. Hoàn tiền qua ngân hàng (nếu có) có thể mất 5-7 ngày làm việc để hiển thị trong tài khoản của bạn.
           </p>
 
-          <h2>7. Dispute Resolution</h2>
+          <h2>7. Giải quyết tranh chấp</h2>
           <p>
-            If you disagree with our refund decision, you may escalate the matter by contacting 
-            our support team. We will review your case and provide a final decision within 
-            72 hours.
+            Nếu bạn không đồng ý với quyết định hoàn tiền, bạn có thể khiếu nại bằng cách liên hệ với đội ngũ hỗ trợ. Chúng tôi
+            sẽ xem xét và đưa ra quyết định cuối cùng trong vòng 72 giờ.
           </p>
 
-          <h2>8. Chargebacks</h2>
+          <h2>8. Chargeback</h2>
           <p>
-            Filing a chargeback without first contacting our support team may result in 
-            permanent account suspension. We encourage you to reach out to us first to resolve 
-            any issues.
+            Nếu bạn thực hiện chargeback mà không liên hệ trước với bộ phận hỗ trợ, tài khoản của bạn có thể bị đình chỉ vĩnh viễn.
+            Chúng tôi khuyến khích bạn liên hệ với chúng tôi trước để giải quyết mọi vấn đề.
           </p>
 
-          <h2>9. Contact Us</h2>
+          <h2>9. Liên hệ</h2>
           <p>
-            For refund requests or questions about this policy, please contact us:
+            Để yêu cầu hoàn tiền hoặc hỏi về chính sách này, vui lòng liên hệ với chúng tôi:
           </p>
           <ul>
-            <li>Email: support@smmpanel.com</li>
-            <li>Phone: +91 9876543210</li>
+            <li>Email: support@unamshop.com</li>
+            <li>Điện thoại: +84 912 345 678</li>
           </ul>
         </div>
       </div>
@@ -114,7 +109,7 @@ const RefundPolicy = () => {
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-8">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <p>&copy; 2025 SMM Panel. All rights reserved.</p>
+          <p>&copy; 2025 ỪnAm SHOP. Bản quyền thuộc về ỪnAm SHOP.</p>
         </div>
       </footer>
     </div>

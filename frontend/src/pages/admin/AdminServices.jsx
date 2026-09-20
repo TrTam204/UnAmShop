@@ -38,7 +38,7 @@ const AdminServices = () => {
       const response = await servicesAPI.getAll();
       setServices(response.data.data);
     } catch (error) {
-      toast.error('Failed to fetch services');
+      toast.error('Không thể tải danh sách dịch vụ');
     } finally {
       setLoading(false);
     }
@@ -87,30 +87,30 @@ const AdminServices = () => {
 
       if (editingService) {
         await servicesAPI.update(editingService._id, data);
-        toast.success('Service updated successfully');
+        toast.success('Cập nhật dịch vụ thành công');
       } else {
         await servicesAPI.create(data);
-        toast.success('Service created successfully');
+        toast.success('Tạo dịch vụ thành công');
       }
 
       setModalOpen(false);
       fetchServices();
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Operation failed');
+      toast.error(error.response?.data?.error || 'Thao tác thất bại');
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this service?')) return;
+    if (!window.confirm('Bạn có chắc muốn xóa dịch vụ này không?')) return;
 
     try {
       await servicesAPI.delete(id);
-      toast.success('Service deleted successfully');
+      toast.success('Xóa dịch vụ thành công');
       fetchServices();
     } catch (error) {
-      toast.error('Failed to delete service');
+      toast.error('Xóa dịch vụ thất bại');
     }
   };
 
@@ -122,32 +122,32 @@ const AdminServices = () => {
     },
     {
       key: 'title',
-      title: 'Title',
+      title: 'Tiêu đề',
       render: (title) => <span className="font-medium">{title}</span>,
     },
     { key: 'category', title: 'Category' },
     {
       key: 'rate',
-      title: 'Rate',
-      render: (rate) => `₹${rate}/1000`,
+      title: 'Giá',
+      render: (rate) => `${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(rate || 0))}/1000`,
     },
     {
       key: 'min',
-      title: 'Min/Max',
+      title: 'Tối thiểu/Tối đa',
       render: (_, row) => `${row.min} / ${row.max}`,
     },
     {
       key: 'isActive',
-      title: 'Status',
+      title: 'Trạng thái',
       render: (isActive) => (
         <Badge variant={isActive ? 'success' : 'danger'}>
-          {isActive ? 'Active' : 'Inactive'}
+          {isActive ? 'Hoạt động' : 'Không hoạt động'}
         </Badge>
       ),
     },
     {
       key: 'actions',
-      title: 'Actions',
+      title: 'Hành động',
       render: (_, row) => (
         <div className="flex gap-2">
           <button
@@ -173,12 +173,12 @@ const AdminServices = () => {
     <div className="fade-in">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Manage Services</h1>
-          <p className="text-gray-500 mt-1">Add, edit, or remove services</p>
+          <h1 className="text-2xl font-bold text-gray-900">Quản lý dịch vụ</h1>
+          <p className="text-gray-500 mt-1">Thêm, sửa hoặc xóa dịch vụ</p>
         </div>
         <Button onClick={() => handleOpenModal()}>
           <HiOutlinePlus className="w-5 h-5 mr-2" />
-          Add Service
+          Thêm dịch vụ
         </Button>
       </div>
 
@@ -186,7 +186,7 @@ const AdminServices = () => {
         <Table
           columns={columns}
           data={services}
-          emptyMessage="No services found"
+          emptyMessage="Không tìm thấy dịch vụ nào"
         />
       </Card>
 
@@ -194,31 +194,31 @@ const AdminServices = () => {
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={editingService ? 'Edit Service' : 'Add Service'}
+        title={editingService ? 'Chỉnh sửa dịch vụ' : 'Thêm dịch vụ'}
         size="lg"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
-            label="Title"
+            label="Tiêu đề"
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             required
           />
           <Input
-            label="Category"
+            label="Danh mục"
             value={formData.category}
             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
             placeholder="e.g., Instagram Followers"
             required
           />
           <Input
-            label="Description"
+            label="Mô tả"
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           />
           <div className="grid grid-cols-3 gap-4">
             <Input
-              label="Rate (per 1000)"
+              label="Giá (mỗi 1000)"
               type="number"
               step="0.01"
               value={formData.rate}
@@ -226,14 +226,14 @@ const AdminServices = () => {
               required
             />
             <Input
-              label="Minimum"
+              label="Tối thiểu"
               type="number"
               value={formData.min}
               onChange={(e) => setFormData({ ...formData, min: e.target.value })}
               required
             />
             <Input
-              label="Maximum"
+              label="Tối đa"
               type="number"
               value={formData.max}
               onChange={(e) => setFormData({ ...formData, max: e.target.value })}
@@ -241,7 +241,7 @@ const AdminServices = () => {
             />
           </div>
           <Input
-            label="Provider Service ID"
+            label="Mã dịch vụ nhà cung cấp"
             value={formData.providerServiceId}
             onChange={(e) =>
               setFormData({ ...formData, providerServiceId: e.target.value })

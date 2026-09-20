@@ -17,10 +17,10 @@ const Login = () => {
 
     try {
       await login(email, password);
-      toast.success('Login successful!');
+      toast.success('Đăng nhập thành công!');
       navigate('/dashboard');
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Login failed');
+      toast.error(error.response?.data?.error || 'Đăng nhập thất bại');
     } finally {
       setLoading(false);
     }
@@ -35,8 +35,8 @@ const Login = () => {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-500 rounded-xl mb-4">
               <span className="text-white font-bold text-2xl">S</span>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
-            <p className="text-gray-500 mt-2">Sign in to your account</p>
+            <h1 className="text-2xl font-bold text-gray-900">Chào mừng trở lại</h1>
+            <p className="text-gray-500 mt-2">Đăng nhập vào tài khoản của bạn</p>
           </div>
 
           {/* Form */}
@@ -44,15 +44,15 @@ const Login = () => {
             <Input
               label="Email"
               type="email"
-              placeholder="Enter your email"
+              placeholder="Nhập email của bạn"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
             <Input
-              label="Password"
+              label="Mật khẩu"
               type="password"
-              placeholder="Enter your password"
+              placeholder="Nhập mật khẩu"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -64,19 +64,19 @@ const Login = () => {
               className="w-full"
               size="lg"
             >
-              Sign In
+              Đăng nhập
             </Button>
           </form>
 
           {/* Footer */}
           <div className="mt-6 text-center">
             <p className="text-gray-600">
-              Don't have an account?{' '}
+              Chưa có tài khoản?{' '}
               <Link
                 to="/register"
                 className="text-primary-600 font-medium hover:underline"
               >
-                Sign up
+                Đăng ký
               </Link>
             </p>
           </div>

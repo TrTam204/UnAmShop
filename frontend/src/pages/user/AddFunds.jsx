@@ -100,12 +100,12 @@ const AddFunds = () => {
       setCreatedDeposit(deposit);
       setAmount('');
       await loadWallet();
-      toast.success('Deposit request created');
+      toast.success('YĂªu cáº§u náº¡p tiá»n Ä‘Ă£ Ä‘Æ°á»£c táº¡o');
     } catch (error) {
       if (error.code === 'SUPABASE_AUTH_REQUIRED') {
         setAuthBoundary(true);
       } else {
-        toast.error(error.message || 'Failed to create deposit request');
+        toast.error(error.message || 'Táº¡o yĂªu cáº§u náº¡p tiá»n tháº¥t báº¡i');
       }
     } finally {
       setSubmitting(false);
@@ -120,9 +120,9 @@ const AddFunds = () => {
         setCreatedDeposit(null);
       }
       await loadWallet();
-      toast.success('Deposit request cancelled');
+      toast.success('YĂªu cáº§u náº¡p tiá»n Ä‘Ă£ Ä‘Æ°á»£c há»§y');
     } catch (error) {
-      toast.error(error.message || 'Failed to cancel deposit request');
+      toast.error(error.message || 'Há»§y yĂªu cáº§u náº¡p tiá»n tháº¥t báº¡i');
     } finally {
       setCancellingId(null);
     }
@@ -130,30 +130,30 @@ const AddFunds = () => {
 
   const copyReference = async (reference) => {
     await navigator.clipboard.writeText(reference);
-    toast.success('Transfer reference copied');
+    toast.success('MĂ£ chuyá»ƒn khoáº£n Ä‘Ă£ Ä‘Æ°á»£c sao chĂ©p');
   };
 
   const transactionColumns = [
     {
       key: 'direction',
-      title: 'Type',
+      title: 'Loáº¡i',
       render: (direction) => (
         <Badge variant={direction === 'credit' ? 'success' : 'danger'}>
-          {direction === 'credit' ? 'Credit' : 'Debit'}
+          {direction === 'credit' ? 'TĂ­n dá»¥ng' : 'Ghi ná»£'}
         </Badge>
       ),
     },
-    { key: 'amount_vnd', title: 'Amount', render: (value) => formatVnd(value) },
-    { key: 'description', title: 'Description' },
-    { key: 'balance_after_vnd', title: 'Balance After', render: (value) => formatVnd(value) },
-    { key: 'created_at', title: 'Date', render: (value) => new Date(value).toLocaleString() },
+    { key: 'amount_vnd', title: 'Sá»‘ tiá»n', render: (value) => formatVnd(value) },
+    { key: 'description', title: 'MĂ´ táº£' },
+    { key: 'balance_after_vnd', title: 'Sá»‘ dÆ° sau', render: (value) => formatVnd(value) },
+    { key: 'created_at', title: 'NgĂ y', render: (value) => new Date(value).toLocaleString() },
   ];
 
   return (
     <div className="fade-in">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Add Funds</h1>
-        <p className="text-gray-500 mt-1">Deposit VND by VietQR or contact admin via Zalo.</p>
+        <h1 className="text-2xl font-bold text-gray-900">Náº¡p tiá»n</h1>
+        <p className="text-gray-500 mt-1">Náº¡p VND qua VietQR hoáº·c liĂªn há»‡ quáº£n trá»‹ qua Zalo.</p>
       </div>
 
       {authBoundary && (
@@ -167,13 +167,13 @@ const AddFunds = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1 space-y-6">
-          <Card title="Current Balance">
+          <Card title="Sá»‘ dÆ° hiá»‡n táº¡i">
             <p className="text-3xl font-bold text-primary-600">
               {authBoundary ? 'Unavailable' : formatVnd(wallet.balance)}
             </p>
           </Card>
 
-          <Card title="Deposit Method">
+          <Card title="PhÆ°Æ¡ng thá»©c náº¡p">
             <div className="space-y-3">
               {paymentMethods.map((method) => (
                 <button
@@ -193,11 +193,11 @@ const AddFunds = () => {
             </div>
 
             <Input
-              label="Amount (VND)"
+              label="Sá»‘ tiá»n (VND)"
               type="number"
               min="1"
               step="1"
-              placeholder="Enter amount"
+              placeholder="Nháº­p sá»‘ tiá»n"
               value={amount}
               onChange={(event) => setAmount(event.target.value)}
               className="mt-5"
@@ -211,19 +211,19 @@ const AddFunds = () => {
               className="w-full mt-5"
               size="lg"
             >
-              Create Deposit Request
+              Táº¡o yĂªu cáº§u náº¡p tiá»n
             </Button>
           </Card>
         </div>
 
         <div className="lg:col-span-2 space-y-6">
           {createdDeposit && (
-            <Card title="Deposit Instructions">
+            <Card title="HÆ°á»›ng dáº«n náº¡p tiá»n">
               <div className="space-y-4">
                 <p className="text-sm text-gray-600">
-                  Request status: <Badge variant={statusVariants[createdDeposit.status] || 'default'}>{createdDeposit.status}</Badge>
+                  Tráº¡ng thĂ¡i yĂªu cáº§u: <Badge variant={statusVariants[createdDeposit.status] || 'default'}>{createdDeposit.status}</Badge>
                 </p>
-                <p className="font-semibold">Amount: {formatVnd(createdDeposit.amount_vnd)}</p>
+                <p className="font-semibold">Sá»‘ tiá»n: {formatVnd(createdDeposit.amount_vnd)}</p>
 
                 {createdDeposit.payment_method === 'vietqr' ? (
                   <div className="flex flex-col sm:flex-row gap-5 items-start">
@@ -235,19 +235,19 @@ const AddFunds = () => {
                       </p>
                     )}
                     <div className="space-y-2 text-sm">
-                      <p>Transfer the exact amount to the configured bank destination.</p>
-                      <p>Reference: <strong>{createdDeposit.payment_reference || createdDeposit.id}</strong></p>
+                      <p>Chuyá»ƒn Ä‘Ăºng sá»‘ tiá»n Ä‘áº¿n ngĂ¢n hĂ ng Ä‘Ă£ cáº¥u hĂ¬nh.</p>
+                      <p>MĂ£ tham chiáº¿u: <strong>{createdDeposit.payment_reference || createdDeposit.id}</strong></p>
                       <Button
                         variant="secondary"
                         onClick={() => copyReference(createdDeposit.payment_reference || createdDeposit.id)}
                       >
-                        Copy Reference
+                        Sao chĂ©p mĂ£
                       </Button>
                     </div>
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <p className="text-sm text-gray-600">Contact admin via Zalo and include this request ID:</p>
+                    <p className="text-sm text-gray-600">LiĂªn há»‡ quáº£n trá»‹ qua Zalo vĂ  gá»­i kĂ¨m mĂ£ yĂªu cáº§u nĂ y:</p>
                     <p className="font-mono text-sm break-all">{createdDeposit.id}</p>
                     {zaloContactUrl ? (
                       <a
@@ -256,7 +256,7 @@ const AddFunds = () => {
                         rel="noreferrer"
                         className="inline-flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
                       >
-                        Contact Admin via Zalo
+                        LiĂªn há»‡ quáº£n trá»‹ qua Zalo
                       </a>
                     ) : (
                       <p className="text-sm text-amber-700 bg-amber-50 rounded-lg p-4">
@@ -269,7 +269,7 @@ const AddFunds = () => {
             </Card>
           )}
 
-          <Card title="Deposit History">
+          <Card title="Lá»‹ch sá»­ náº¡p tiá»n">
             {loading ? (
               <PageLoader />
             ) : (
@@ -277,11 +277,11 @@ const AddFunds = () => {
                 <table className="min-w-full text-sm">
                   <thead>
                     <tr className="border-b text-left text-gray-500">
-                      <th className="py-3 pr-4">Method</th>
-                      <th className="py-3 pr-4">Amount</th>
-                      <th className="py-3 pr-4">Status</th>
-                      <th className="py-3 pr-4">Date</th>
-                      <th className="py-3">Action</th>
+                      <th className="py-3 pr-4">PhÆ°Æ¡ng thá»©c</th>
+                      <th className="py-3 pr-4">Sá»‘ tiá»n</th>
+                      <th className="py-3 pr-4">Tráº¡ng thĂ¡i</th>
+                      <th className="py-3 pr-4">NgĂ y</th>
+                      <th className="py-3">HĂ nh Ä‘á»™ng</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -298,7 +298,7 @@ const AddFunds = () => {
                               loading={cancellingId === deposit.id}
                               onClick={() => handleCancel(deposit.id)}
                             >
-                              Cancel
+                              Há»§y
                             </Button>
                           )}
                         </td>
@@ -307,14 +307,14 @@ const AddFunds = () => {
                   </tbody>
                 </table>
                 {!wallet.deposits.length && !authBoundary && (
-                  <p className="py-8 text-center text-gray-500">No deposit requests yet.</p>
+                  <p className="py-8 text-center text-gray-500">ChÆ°a cĂ³ yĂªu cáº§u náº¡p tiá»n nĂ o.</p>
                 )}
               </div>
             )}
           </Card>
 
-          <Card title="Transaction History">
-            <Table columns={transactionColumns} data={wallet.transactions} emptyMessage={authBoundary ? 'Available after Supabase Auth is enabled' : 'No transactions yet'} />
+          <Card title="Lá»‹ch sá»­ giao dá»‹ch">
+            <Table columns={transactionColumns} data={wallet.transactions} emptyMessage={authBoundary ? 'Sáº½ kháº£ dá»¥ng sau khi Supabase Auth Ä‘Æ°á»£c kĂ­ch hoáº¡t' : 'ChÆ°a cĂ³ giao dá»‹ch nĂ o'} />
           </Card>
         </div>
       </div>

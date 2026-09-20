@@ -17,7 +17,7 @@ const Register = () => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error('Mật khẩu không khớp');
       return;
     }
 
@@ -25,10 +25,10 @@ const Register = () => {
 
     try {
       await register(name, email, password);
-      toast.success('Registration successful!');
+      toast.success('Đăng ký thành công!');
       navigate('/dashboard');
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Registration failed');
+      toast.error(error.response?.data?.error || 'Đăng ký thất bại');
     } finally {
       setLoading(false);
     }
@@ -43,16 +43,16 @@ const Register = () => {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-500 rounded-xl mb-4">
               <span className="text-white font-bold text-2xl">S</span>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">Create account</h1>
-            <p className="text-gray-500 mt-2">Start your SMM journey today</p>
+            <h1 className="text-2xl font-bold text-gray-900">Tạo tài khoản</h1>
+            <p className="text-gray-500 mt-2">Bắt đầu hành trình SMM của bạn ngay hôm nay</p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <Input
-              label="Full Name"
+              label="Họ và tên"
               type="text"
-              placeholder="Enter your name"
+              placeholder="Nhập tên của bạn"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -60,23 +60,23 @@ const Register = () => {
             <Input
               label="Email"
               type="email"
-              placeholder="Enter your email"
+              placeholder="Nhập email của bạn"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
             <Input
-              label="Password"
+              label="Mật khẩu"
               type="password"
-              placeholder="Create a password"
+              placeholder="Tạo mật khẩu"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
             <Input
-              label="Confirm Password"
+              label="Xác nhận mật khẩu"
               type="password"
-              placeholder="Confirm your password"
+              placeholder="Nhập lại mật khẩu"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
@@ -88,19 +88,19 @@ const Register = () => {
               className="w-full"
               size="lg"
             >
-              Create Account
+              Tạo tài khoản
             </Button>
           </form>
 
           {/* Footer */}
           <div className="mt-6 text-center">
             <p className="text-gray-600">
-              Already have an account?{' '}
+              Đã có tài khoản?{' '}
               <Link
                 to="/login"
                 className="text-primary-600 font-medium hover:underline"
               >
-                Sign in
+                Đăng nhập
               </Link>
             </p>
           </div>

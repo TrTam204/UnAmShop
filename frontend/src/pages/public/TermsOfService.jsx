@@ -8,11 +8,11 @@ const TermsOfService = () => {
       <nav className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link to="/" className="text-2xl font-bold text-primary-600">SMM Panel</Link>
+            <Link to="/" className="text-2xl font-bold text-primary-600">ỪnAm SHOP</Link>
             <div className="flex items-center space-x-4">
-              <Link to="/login" className="text-gray-600 hover:text-gray-900 font-medium">Login</Link>
+              <Link to="/login" className="text-gray-600 hover:text-gray-900 font-medium">Đăng nhập</Link>
               <Link to="/register" className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700">
-                Get Started
+                Bắt đầu
               </Link>
             </div>
           </div>
@@ -24,92 +24,87 @@ const TermsOfService = () => {
         <div className="max-w-4xl mx-auto px-4">
           <Link to="/" className="inline-flex items-center text-primary-200 hover:text-white mb-4">
             <HiArrowLeft className="w-5 h-5 mr-2" />
-            Back to Home
+            Quay lại trang chủ
           </Link>
-          <h1 className="text-4xl font-bold">Terms of Service</h1>
-          <p className="text-primary-100 mt-2">Last updated: December 4, 2025</p>
+          <h1 className="text-4xl font-bold">Điều khoản dịch vụ</h1>
+          <p className="text-primary-100 mt-2">Cập nhật lần cuối: 4 tháng 12, 2025</p>
         </div>
       </div>
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 py-12">
         <div className="bg-white rounded-xl shadow-sm p-8 legal-content">
-          <h2>1. Acceptance of Terms</h2>
+          <h2>1. Chấp nhận điều khoản</h2>
           <p>
-            By accessing and using SMM Panel, you accept and agree to be bound by the terms and 
-            provisions of this agreement. If you do not agree to these terms, please do not use 
-            our services.
+            Bằng cách truy cập và sử dụng ỪnAm SHOP, bạn chấp nhận và đồng ý bị ràng buộc bởi các điều khoản
+            và điều kiện của thỏa thuận này. Nếu bạn không đồng ý với các điều khoản này, vui lòng không sử dụng dịch vụ của chúng tôi.
           </p>
 
-          <h2>2. Description of Services</h2>
+          <h2>2. Mô tả dịch vụ</h2>
           <p>
-            SMM Panel provides social media marketing services including but not limited to 
-            followers, likes, views, and engagement for various social media platforms. We act 
-            as an intermediary between you and third-party service providers.
+            ỪnAm SHOP cung cấp các dịch vụ tiếp thị mạng xã hội bao gồm nhưng không giới hạn ở follower, like,
+            view và tăng tương tác trên nhiều nền tảng mạng xã hội. Chúng tôi đóng vai trò trung gian giữa bạn và các nhà cung cấp dịch vụ bên thứ ba.
           </p>
 
-          <h2>3. User Responsibilities</h2>
-          <p>As a user of our services, you agree to:</p>
+          <h2>3. Trách nhiệm của người dùng</h2>
+          <p>Với tư cách người dùng dịch vụ của chúng tôi, bạn đồng ý:</p>
           <ul>
-            <li>Provide accurate and complete information when creating an account</li>
-            <li>Maintain the security of your account credentials</li>
-            <li>Not use our services for any illegal or unauthorized purposes</li>
-            <li>Comply with all applicable laws and social media platform terms of service</li>
-            <li>Not resell our services without authorization</li>
+            <li>Cung cấp thông tin chính xác và đầy đủ khi tạo tài khoản</li>
+            <li>Bảo vệ an toàn thông tin đăng nhập tài khoản</li>
+            <li>Không sử dụng dịch vụ cho mục đích bất hợp pháp hoặc không được phép</li>
+            <li>Tuân thủ mọi luật pháp hiện hành và điều khoản của nền tảng mạng xã hội</li>
+            <li>Không bán lại dịch vụ của chúng tôi nếu không có ủy quyền</li>
           </ul>
 
-          <h2>4. Orders and Payments</h2>
+          <h2>4. Đơn hàng và thanh toán</h2>
           <ul>
-            <li>All orders are processed after payment confirmation</li>
-            <li>Prices are subject to change without prior notice</li>
-            <li>We accept payments through authorized payment gateways only</li>
-            <li>Orders cannot be cancelled once processing has begun</li>
+            <li>Tất cả đơn hàng được xử lý sau khi xác nhận thanh toán</li>
+            <li>Giá có thể thay đổi mà không cần thông báo trước</li>
+            <li>Chúng tôi chỉ chấp nhận thanh toán qua cổng thanh toán được ủy quyền</li>
+            <li>Đơn hàng không thể hủy sau khi quy trình xử lý bắt đầu</li>
           </ul>
 
-          <h2>5. Service Delivery</h2>
+          <h2>5. Giao hàng dịch vụ</h2>
           <p>
-            We strive to deliver all orders in a timely manner. However, delivery times may vary 
-            based on order volume, service type, and third-party provider availability. We do not 
-            guarantee specific delivery times unless explicitly stated.
+            Chúng tôi nỗ lực giao tất cả đơn hàng đúng thời hạn. Tuy nhiên, thời gian giao hàng có thể thay đổi tùy vào lượng đơn,
+            loại dịch vụ và tình trạng của nhà cung cấp bên thứ ba. Chúng tôi không đảm bảo thời gian giao cụ thể trừ khi có quy định rõ ràng.
           </p>
 
-          <h2>6. No Guarantee Policy</h2>
+          <h2>6. Chính sách không đảm bảo</h2>
           <p>
-            While we strive to provide high-quality services, we cannot guarantee:
+            Mặc dù chúng tôi cố gắng mang đến dịch vụ chất lượng cao, nhưng chúng tôi không đảm bảo:
           </p>
           <ul>
-            <li>Permanent retention of followers, likes, or views</li>
-            <li>Specific results or outcomes from our services</li>
-            <li>That services will meet your specific requirements</li>
-            <li>Uninterrupted or error-free service</li>
+            <li>Giữ vững follower, like hoặc view vĩnh viễn</li>
+            <li>Kết quả cụ thể hoặc hiệu quả từ dịch vụ của chúng tôi</li>
+            <li>Rằng dịch vụ sẽ đáp ứng đúng yêu cầu riêng của bạn</li>
+            <li>Dịch vụ không bị gián đoạn hoặc không có lỗi</li>
           </ul>
 
-          <h2>7. Limitation of Liability</h2>
+          <h2>7. Giới hạn trách nhiệm</h2>
           <p>
-            SMM Panel shall not be liable for any indirect, incidental, special, consequential, 
-            or punitive damages resulting from your use of our services. Our total liability 
-            shall not exceed the amount paid for the specific service in question.
+            ỪnAm SHOP không chịu trách nhiệm đối với bất kỳ thiệt hại gián tiếp, ngẫu nhiên, đặc biệt, hệ quả hoặc phạt
+            nào phát sinh từ việc bạn sử dụng dịch vụ. Tổng trách nhiệm của chúng tôi không vượt quá số tiền đã thanh toán cho dịch vụ cụ thể đó.
           </p>
 
-          <h2>8. Account Termination</h2>
+          <h2>8. Kết thúc tài khoản</h2>
           <p>
-            We reserve the right to terminate or suspend your account at any time for violations 
-            of these terms, fraudulent activity, or any other reason at our sole discretion.
+            Chúng tôi có quyền chấm dứt hoặc tạm ngưng tài khoản của bạn bất cứ lúc nào nếu vi phạm các điều khoản,
+            hoạt động gian lận hoặc bất kỳ lý do nào khác theo quyết định riêng của chúng tôi.
           </p>
 
-          <h2>9. Changes to Terms</h2>
+          <h2>9. Thay đổi điều khoản</h2>
           <p>
-            We reserve the right to modify these terms at any time. Continued use of our services 
-            after changes constitutes acceptance of the modified terms.
+            Chúng tôi có quyền sửa đổi các điều khoản này bất cứ lúc nào. Việc tiếp tục sử dụng dịch vụ sau khi thay đổi đồng nghĩa với việc bạn chấp nhận các điều khoản đã sửa đổi.
           </p>
 
-          <h2>10. Contact Information</h2>
+          <h2>10. Thông tin liên hệ</h2>
           <p>
-            For questions about these Terms of Service, contact us at:
+            Nếu bạn có câu hỏi về Điều khoản Dịch vụ này, vui lòng liên hệ với chúng tôi qua:
           </p>
           <ul>
-            <li>Email: support@smmpanel.com</li>
-            <li>Phone: +91 9876543210</li>
+            <li>Email: support@unamshop.com</li>
+            <li>Điện thoại: +84 912 345 678</li>
           </ul>
         </div>
       </div>
@@ -117,7 +112,7 @@ const TermsOfService = () => {
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-8">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <p>&copy; 2025 SMM Panel. All rights reserved.</p>
+          <p>&copy; 2025 ỪnAm SHOP. Bản quyền thuộc về ỪnAm SHOP.</p>
         </div>
       </footer>
     </div>

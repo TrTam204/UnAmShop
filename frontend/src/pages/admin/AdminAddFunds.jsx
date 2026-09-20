@@ -24,10 +24,10 @@ const AdminAddFunds = () => {
       if (response.data.data.length > 0) {
         setUser(response.data.data[0]);
       } else {
-        toast.error('User not found');
+        toast.error('Không tìm thấy người dùng');
       }
     } catch (error) {
-      toast.error('Failed to search user');
+      toast.error('Không thể tìm kiếm người dùng');
     } finally {
       setSearching(false);
     }
@@ -38,7 +38,7 @@ const AdminAddFunds = () => {
 
     const amountNum = parseFloat(amount);
     if (!amountNum || amountNum <= 0) {
-      toast.error('Please enter a valid amount');
+      toast.error('Vui lòng nhập số tiền hợp lệ');
       return;
     }
 
@@ -51,7 +51,7 @@ const AdminAddFunds = () => {
         description: description || `Manual addition by admin`,
       });
 
-      toast.success(`₹${amountNum} added to ${user.name}'s wallet`);
+      toast.success(`${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(amountNum)} đã được thêm vào ví của ${user.name}`);
       setUser({
         ...user,
         walletBalance: response.data.data.newBalance,
@@ -59,7 +59,7 @@ const AdminAddFunds = () => {
       setAmount('');
       setDescription('');
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Failed to add funds');
+      toast.error(error.response?.data?.error || 'Nạp tiền thất bại');
     } finally {
       setSubmitting(false);
     }
@@ -68,12 +68,12 @@ const AdminAddFunds = () => {
   return (
     <div className="fade-in max-w-2xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Add Funds Manually</h1>
-        <p className="text-gray-500 mt-1">Add funds to a user's wallet</p>
+        <h1 className="text-2xl font-bold text-gray-900">Nạp tiền thủ công</h1>
+        <p className="text-gray-500 mt-1">Thêm tiền vào ví người dùng</p>
       </div>
 
       {/* Search User */}
-      <Card title="Search User" className="mb-6">
+      <Card title="Tìm kiếm người dùng" className="mb-6">
         <form onSubmit={handleSearch} className="flex gap-3">
           <div className="flex-1">
             <Input
@@ -84,14 +84,14 @@ const AdminAddFunds = () => {
           </div>
           <Button type="submit" loading={searching}>
             <HiOutlineSearch className="w-5 h-5 mr-2" />
-            Search
+            Tìm kiếm
           </Button>
         </form>
       </Card>
 
       {/* User Found */}
       {user && (
-        <Card title="User Details">
+        <Card title="Thông tin người dùng">
           <div className="mb-6 p-4 bg-gray-50 rounded-lg">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center">
@@ -104,9 +104,9 @@ const AdminAddFunds = () => {
                 <p className="text-gray-500">{user.email}</p>
               </div>
               <div className="ml-auto text-right">
-                <p className="text-sm text-gray-500">Current Balance</p>
+                <p className="text-sm text-gray-500">Số dư hiện tại</p>
                 <p className="text-2xl font-bold text-primary-600">
-                  ₹{user.walletBalance.toFixed(2)}
+                  {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(user.walletBalance || 0))}
                 </p>
               </div>
             </div>
@@ -114,17 +114,17 @@ const AdminAddFunds = () => {
 
           <form onSubmit={handleAddFunds} className="space-y-4">
             <Input
-              label="Amount to Add (₹)"
+              label="Số tiền nạp (VND)"
               type="number"
               step="0.01"
-              placeholder="Enter amount"
+              placeholder="Nhập số tiền"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               required
             />
             <Input
-              label="Description (Optional)"
-              placeholder="Reason for adding funds"
+              label="Mô tả (tùy chọn)"
+              placeholder="Lý do nạp tiền"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -132,16 +132,16 @@ const AdminAddFunds = () => {
             {/* Preview */}
             {amount && parseFloat(amount) > 0 && (
               <div className="p-4 bg-green-50 rounded-lg">
-                <p className="text-sm text-gray-600">New Balance After Addition</p>
+                <p className="text-sm text-gray-600">Số dư mới sau khi nạp</p>
                 <p className="text-2xl font-bold text-green-600">
-                  ₹{(user.walletBalance + parseFloat(amount)).toFixed(2)}
+                  {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(user.walletBalance || 0) + parseFloat(amount || 0))}
                 </p>
               </div>
             )}
 
             <Button type="submit" loading={submitting} className="w-full" size="lg">
               <HiOutlineCheck className="w-5 h-5 mr-2" />
-              Add Funds
+              Nạp tiền
             </Button>
           </form>
         </Card>

@@ -58,7 +58,7 @@ const PublicServices = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link to="/" className="text-2xl font-bold text-primary-600">SMM Panel</Link>
+              <Link to="/" className="text-2xl font-bold text-primary-600">ỪnAm SHOP</Link>
             </div>
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
@@ -66,7 +66,7 @@ const PublicServices = () => {
                   to="/dashboard"
                   className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors"
                 >
-                  Dashboard
+                  Bảng điều khiển
                 </Link>
               ) : (
                 <>
@@ -74,13 +74,13 @@ const PublicServices = () => {
                     to="/login"
                     className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
                   >
-                    Login
+                    Đăng nhập
                   </Link>
                   <Link
                     to="/register"
                     className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors"
                   >
-                    Get Started
+                    Bắt đầu
                   </Link>
                 </>
               )}
@@ -94,11 +94,11 @@ const PublicServices = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/" className="inline-flex items-center text-primary-200 hover:text-white mb-4">
             <HiArrowLeft className="w-5 h-5 mr-2" />
-            Back to Home
+            Quay lại trang chủ
           </Link>
-          <h1 className="text-4xl font-bold mb-4">All Services</h1>
+          <h1 className="text-4xl font-bold mb-4">Tất cả dịch vụ</h1>
           <p className="text-xl text-primary-100 max-w-2xl">
-            Browse our complete list of SMM services with competitive pricing.
+            Khám phá danh sách dịch vụ SMM đầy đủ với mức giá cạnh tranh.
           </p>
         </div>
       </div>
@@ -111,7 +111,7 @@ const PublicServices = () => {
             <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
-              placeholder="Search services..."
+              placeholder="Tìm kiếm dịch vụ..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -124,7 +124,7 @@ const PublicServices = () => {
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
-            <option value="all">All Categories</option>
+            <option value="all">Tất cả danh mục</option>
             {categories.map((category) => (
               <option key={category} value={category}>
                 {category}
@@ -140,7 +140,7 @@ const PublicServices = () => {
           </div>
         ) : filteredServices.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-gray-500 text-lg">No services found.</p>
+            <p className="text-gray-500 text-lg">Không tìm thấy dịch vụ nào.</p>
           </div>
         ) : (
           <div className="grid gap-4">
@@ -168,16 +168,16 @@ const PublicServices = () => {
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <div className="text-2xl font-bold text-primary-600">
-                        ₹{service.pricePerUnit}
+                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(service.pricePerUnit || 0))}
                       </div>
-                      <div className="text-gray-500 text-sm">per 1000</div>
+                      <div className="text-gray-500 text-sm">mỗi 1000</div>
                     </div>
                     <button
                       onClick={() => handleOrder(service._id)}
                       className="flex items-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
                     >
                       <HiOutlineShoppingCart className="w-5 h-5" />
-                      Order
+                      Đặt đơn
                     </button>
                   </div>
                 </div>
@@ -190,7 +190,7 @@ const PublicServices = () => {
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-8 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p>&copy; 2025 SMM Panel. All rights reserved.</p>
+          <p>&copy; 2025 ỪnAm SHOP. Bản quyền thuộc về ỪnAm SHOP.</p>
         </div>
       </footer>
     </div>

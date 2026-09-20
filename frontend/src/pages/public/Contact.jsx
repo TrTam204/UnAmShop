@@ -23,7 +23,7 @@ const Contact = () => {
     // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    toast.success('Message sent successfully! We\'ll get back to you soon.');
+    toast.success('Tin nhắn đã được gửi thành công! Chúng tôi sẽ sớm phản hồi bạn.');
     setFormData({ name: '', email: '', subject: '', message: '' });
     setLoading(false);
   };
@@ -34,11 +34,11 @@ const Contact = () => {
       <nav className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link to="/" className="text-2xl font-bold text-primary-600">SMM Panel</Link>
+            <Link to="/" className="text-2xl font-bold text-primary-600">ỪnAm SHOP</Link>
             <div className="flex items-center space-x-4">
-              <Link to="/login" className="text-gray-600 hover:text-gray-900 font-medium">Login</Link>
+              <Link to="/login" className="text-gray-600 hover:text-gray-900 font-medium">Đăng nhập</Link>
               <Link to="/register" className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700">
-                Get Started
+                Bắt đầu
               </Link>
             </div>
           </div>
@@ -50,10 +50,10 @@ const Contact = () => {
         <div className="max-w-4xl mx-auto px-4">
           <Link to="/" className="inline-flex items-center text-primary-200 hover:text-white mb-4">
             <HiArrowLeft className="w-5 h-5 mr-2" />
-            Back to Home
+            Quay lại trang chủ
           </Link>
-          <h1 className="text-4xl font-bold">Contact Us</h1>
-          <p className="text-primary-100 mt-2">We're here to help you 24/7</p>
+          <h1 className="text-4xl font-bold">Liên hệ</h1>
+          <p className="text-primary-100 mt-2">Chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7</p>
         </div>
       </div>
 
@@ -69,8 +69,8 @@ const Contact = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">Email</h3>
-                  <p className="text-gray-500 mt-1">support@smmpanel.com</p>
-                  <p className="text-gray-500">sales@smmpanel.com</p>
+                  <p className="text-gray-500 mt-1">support@unamshop.com</p>
+                  <p className="text-gray-500">sales@unamshop.com</p>
                 </div>
               </div>
             </div>
@@ -81,9 +81,9 @@ const Contact = () => {
                   <HiOutlinePhone className="w-6 h-6 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">Phone</h3>
-                  <p className="text-gray-500 mt-1">+91 9876543210</p>
-                  <p className="text-gray-500">+91 9876543211</p>
+                  <h3 className="font-semibold text-gray-900">Điện thoại</h3>
+                  <p className="text-gray-500 mt-1">+84 912 345 678</p>
+                  <p className="text-gray-500">+84 987 654 321</p>
                 </div>
               </div>
             </div>
@@ -94,22 +94,22 @@ const Contact = () => {
                   <HiOutlineLocationMarker className="w-6 h-6 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">Office</h3>
+                  <h3 className="font-semibold text-gray-900">Văn phòng</h3>
                   <p className="text-gray-500 mt-1">
-                    123 Business Street<br />
-                    New Delhi, India 110001
+                    123 Đường Kinh doanh<br />
+                    Quận 1, TP. Hồ Chí Minh, Việt Nam
                   </p>
                 </div>
               </div>
             </div>
 
             <div className="bg-primary-50 rounded-xl p-6">
-              <h3 className="font-semibold text-primary-900 mb-2">Business Hours</h3>
+              <h3 className="font-semibold text-primary-900 mb-2">Giờ làm việc</h3>
               <p className="text-primary-700 text-sm">
-                Monday - Friday: 9:00 AM - 6:00 PM IST<br />
-                Saturday: 10:00 AM - 4:00 PM IST<br />
-                Sunday: Closed<br /><br />
-                <strong>Support available 24/7 via email</strong>
+                Thứ Hai - Thứ Sáu: 9:00 - 18:00 ICT<br />
+                Thứ Bảy: 10:00 - 16:00 ICT<br />
+                Chủ Nhật: Nghỉ<br /><br />
+                <strong>Hỗ trợ 24/7 qua email</strong>
               </p>
             </div>
           </div>
@@ -117,12 +117,12 @@ const Contact = () => {
           {/* Contact Form */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl shadow-sm p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Gửi tin nhắn cho chúng tôi</h2>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Your Name
+                      Họ và tên
                     </label>
                     <input
                       type="text"
@@ -131,12 +131,12 @@ const Contact = () => {
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="John Doe"
+                      placeholder="Nguyễn Văn A"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address
+                      Địa chỉ email
                     </label>
                     <input
                       type="email"
@@ -145,14 +145,14 @@ const Contact = () => {
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="john@example.com"
+                      placeholder="nguyenvana@example.com"
                     />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Subject
+                    Chủ đề
                   </label>
                   <input
                     type="text"
@@ -161,13 +161,13 @@ const Contact = () => {
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="How can we help you?"
+                    placeholder="Chúng tôi có thể giúp gì cho bạn?"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Message
+                    Tin nhắn
                   </label>
                   <textarea
                     name="message"
@@ -176,7 +176,7 @@ const Contact = () => {
                     required
                     rows={6}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-                    placeholder="Tell us more about your inquiry..."
+                    placeholder="Hãy cho chúng tôi biết thêm về yêu cầu của bạn..."
                   />
                 </div>
 
@@ -185,7 +185,7 @@ const Contact = () => {
                   disabled={loading}
                   className="w-full bg-primary-600 text-white py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? 'Sending...' : 'Send Message'}
+                  {loading ? 'Đang gửi...' : 'Gửi tin nhắn'}
                 </button>
               </form>
             </div>
@@ -196,7 +196,7 @@ const Contact = () => {
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-8">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <p>&copy; 2025 SMM Panel. All rights reserved.</p>
+          <p>&copy; 2025 ỪnAm SHOP. Bản quyền thuộc về ỪnAm SHOP.</p>
         </div>
       </footer>
     </div>

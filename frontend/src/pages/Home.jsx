@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import {
   HiOutlineLightningBolt,
   HiOutlineShieldCheck,
-  HiOutlineCurrencyRupee,
+  HiOutlineCash,
   HiOutlineSupport,
   HiOutlineChartBar,
   HiOutlineUserGroup,
@@ -15,43 +15,43 @@ const Home = () => {
   const features = [
     {
       icon: HiOutlineLightningBolt,
-      title: 'Instant Delivery',
-      description: 'Get your orders delivered instantly with our automated system.',
+      title: 'Giao hĂ ng tá»©c thĂ¬',
+      description: 'Nháº­n Ä‘Æ¡n nhanh chĂ³ng nhá» há»‡ thá»‘ng tá»± Ä‘á»™ng hĂ³a hiá»‡n Ä‘áº¡i.',
     },
     {
       icon: HiOutlineShieldCheck,
-      title: 'High Quality',
-      description: 'Premium quality services that help grow your social presence.',
+      title: 'Cháº¥t lÆ°á»£ng cao',
+      description: 'Dá»‹ch vá»¥ premium giĂºp tÄƒng trÆ°á»Ÿng máº¡ng xĂ£ há»™i bá»n vá»¯ng.',
     },
     {
-      icon: HiOutlineCurrencyRupee,
-      title: 'Affordable Prices',
-      description: 'Competitive pricing with the best rates in the market.',
+      icon: HiOutlineCash,
+      title: 'GiĂ¡ há»£p lĂ½',
+      description: 'Má»©c giĂ¡ cáº¡nh tranh vá»›i tá»· lá»‡ tá»‘t nháº¥t thá»‹ trÆ°á»ng.',
     },
     {
       icon: HiOutlineSupport,
-      title: '24/7 Support',
-      description: 'Round the clock customer support for all your queries.',
+      title: 'Há»— trá»£ 24/7',
+      description: 'Há»— trá»£ khĂ¡ch hĂ ng má»i lĂºc má»i nÆ¡i cho má»i tháº¯c máº¯c.',
     },
     {
       icon: HiOutlineChartBar,
-      title: 'Real-time Tracking',
-      description: 'Track your orders in real-time with detailed status updates.',
+      title: 'Theo dĂµi thá»i gian thá»±c',
+      description: 'Theo dĂµi Ä‘Æ¡n hĂ ng theo thá»i gian thá»±c vá»›i cáº­p nháº­t rĂµ rĂ ng.',
     },
     {
       icon: HiOutlineUserGroup,
-      title: 'Trusted by Thousands',
-      description: 'Join thousands of satisfied customers growing their presence.',
+      title: 'ÄÆ°á»£c tin tÆ°á»Ÿng bá»Ÿi hĂ ng nghĂ¬n khĂ¡ch hĂ ng',
+      description: 'Tham gia cĂ¹ng hĂ ng nghĂ¬n khĂ¡ch hĂ ng Ä‘Ă£ tÄƒng trÆ°á»Ÿng thĂ nh cĂ´ng.',
     },
   ];
 
   const services = [
-    { name: 'Instagram Followers', price: '₹10', per: '1000' },
-    { name: 'YouTube Views', price: '₹15', per: '1000' },
-    { name: 'Facebook Likes', price: '₹8', per: '1000' },
-    { name: 'Twitter Followers', price: '₹12', per: '1000' },
-    { name: 'Telegram Members', price: '₹20', per: '1000' },
-    { name: 'TikTok Followers', price: '₹14', per: '1000' },
+    { name: 'Instagram Followers', price: '10.000Ä‘', per: '1000' },
+    { name: 'YouTube Views', price: '15.000Ä‘', per: '1000' },
+    { name: 'Facebook Likes', price: '8.000Ä‘', per: '1000' },
+    { name: 'Twitter Followers', price: '12.000Ä‘', per: '1000' },
+    { name: 'Telegram Members', price: '20.000Ä‘', per: '1000' },
+    { name: 'TikTok Followers', price: '14.000Ä‘', per: '1000' },
   ];
 
   return (
@@ -61,7 +61,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <span className="text-2xl font-bold text-primary-600">SMM Panel</span>
+              <span className="text-2xl font-bold text-primary-600">á»ªnAm SHOP</span>
             </div>
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
@@ -69,7 +69,7 @@ const Home = () => {
                   to="/dashboard"
                   className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors"
                 >
-                  Dashboard
+                  Báº£ng Ä‘iá»u khiá»ƒn
                 </Link>
               ) : (
                 <>
@@ -77,13 +77,13 @@ const Home = () => {
                     to="/login"
                     className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
                   >
-                    Login
+                    ÄÄƒng nháº­p
                   </Link>
                   <Link
                     to="/register"
                     className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors"
                   >
-                    Get Started
+                    Báº¯t Ä‘áº§u
                   </Link>
                 </>
               )}
@@ -96,25 +96,25 @@ const Home = () => {
       <section className="bg-gradient-to-br from-primary-600 to-primary-800 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Grow Your Social Media
-            <span className="block text-primary-200">Presence Today</span>
+            TÄƒng trÆ°á»Ÿng máº¡ng xĂ£ há»™i
+            <span className="block text-primary-200">cá»§a báº¡n ngay hĂ´m nay</span>
           </h1>
           <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-            The #1 SMM Panel for all your social media marketing needs. 
-            Get real followers, likes, views, and more at unbeatable prices.
+            á»ªnAm SHOP lĂ  ná»n táº£ng SMM hĂ ng Ä‘áº§u cho má»i nhu cáº§u quáº£ng bĂ¡ máº¡ng xĂ£ há»™i.
+            Nháº­n follower, like, view vĂ  nhiá»u dá»‹ch vá»¥ khĂ¡c vá»›i má»©c giĂ¡ Æ°u Ä‘Ă£i.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to={isAuthenticated ? '/new-order' : '/register'}
               className="bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
             >
-              Start Ordering Now
+              Äáº·t Ä‘Æ¡n ngay
             </Link>
             <Link
               to="/services"
               className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary-600 transition-colors"
             >
-              View Services
+              Xem dá»‹ch vá»¥
             </Link>
           </div>
         </div>
@@ -126,19 +126,19 @@ const Home = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
               <div className="text-4xl font-bold text-primary-600">50K+</div>
-              <div className="text-gray-500 mt-1">Happy Customers</div>
+              <div className="text-gray-500 mt-1">KhĂ¡ch hĂ ng hĂ i lĂ²ng</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-primary-600">1M+</div>
-              <div className="text-gray-500 mt-1">Orders Completed</div>
+              <div className="text-gray-500 mt-1">ÄÆ¡n Ä‘Ă£ hoĂ n thĂ nh</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-primary-600">100+</div>
-              <div className="text-gray-500 mt-1">Services Available</div>
+              <div className="text-gray-500 mt-1">Dá»‹ch vá»¥ cĂ³ sáºµn</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-primary-600">24/7</div>
-              <div className="text-gray-500 mt-1">Customer Support</div>
+              <div className="text-gray-500 mt-1">Há»— trá»£ khĂ¡ch hĂ ng</div>
             </div>
           </div>
         </div>
@@ -149,10 +149,10 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose Us?
+              VĂ¬ sao chá»n chĂºng tĂ´i?
             </h2>
             <p className="text-gray-500 max-w-2xl mx-auto">
-              We provide the best SMM services with instant delivery and 24/7 support.
+              ChĂºng tĂ´i mang Ä‘áº¿n dá»‹ch vá»¥ SMM tá»‘t nháº¥t vá»›i giao hĂ ng tá»©c thĂ¬ vĂ  há»— trá»£ 24/7.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -179,10 +179,10 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Popular Services
+              Dá»‹ch vá»¥ phá»• biáº¿n
             </h2>
             <p className="text-gray-500 max-w-2xl mx-auto">
-              Check out our most popular SMM services with competitive pricing.
+              KhĂ¡m phĂ¡ cĂ¡c dá»‹ch vá»¥ SMM Ä‘Æ°á»£c Æ°a chuá»™ng nháº¥t vá»›i má»©c giĂ¡ cáº¡nh tranh.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -204,7 +204,7 @@ const Home = () => {
                   to={isAuthenticated ? '/new-order' : '/register'}
                   className="mt-4 block text-center bg-primary-50 text-primary-600 py-2 rounded-lg font-medium hover:bg-primary-100 transition-colors"
                 >
-                  Order Now
+                  Äáº·t Ä‘Æ¡n ngay
                 </Link>
               </div>
             ))}
@@ -214,7 +214,7 @@ const Home = () => {
               to="/services"
               className="text-primary-600 font-medium hover:underline"
             >
-              View All Services →
+              Xem táº¥t cáº£ dá»‹ch vá»¥ â†’
             </Link>
           </div>
         </div>
@@ -224,16 +224,16 @@ const Home = () => {
       <section className="py-20 bg-gradient-to-br from-primary-600 to-primary-800 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Grow Your Social Media?
+            Sáºµn sĂ ng tÄƒng trÆ°á»Ÿng máº¡ng xĂ£ há»™i cá»§a báº¡n?
           </h2>
           <p className="text-xl text-primary-100 mb-8">
-            Join thousands of satisfied customers and start growing today.
+            Tham gia cĂ¹ng hĂ ng nghĂ¬n khĂ¡ch hĂ ng Ä‘Ă£ hĂ i lĂ²ng vĂ  báº¯t Ä‘áº§u tÄƒng trÆ°á»Ÿng ngay hĂ´m nay.
           </p>
           <Link
             to={isAuthenticated ? '/dashboard' : '/register'}
             className="inline-block bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
           >
-            Get Started for Free
+            Báº¯t Ä‘áº§u miá»…n phĂ­
           </Link>
         </div>
       </section>
@@ -243,18 +243,18 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <span className="text-2xl font-bold text-white">SMM Panel</span>
+              <span className="text-2xl font-bold text-white">á»ªnAm SHOP</span>
               <p className="mt-4">
-                Your trusted partner for social media growth and marketing services.
+                Äá»‘i tĂ¡c tin cáº­y cho viá»‡c tÄƒng trÆ°á»Ÿng vĂ  quáº£ng bĂ¡ máº¡ng xĂ£ há»™i.
               </p>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Quick Links</h4>
+              <h4 className="text-white font-semibold mb-4">LiĂªn káº¿t nhanh</h4>
               <ul className="space-y-2">
-                <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
-                <li><Link to="/services" className="hover:text-white transition-colors">Services</Link></li>
-                <li><Link to="/login" className="hover:text-white transition-colors">Login</Link></li>
-                <li><Link to="/register" className="hover:text-white transition-colors">Register</Link></li>
+                <li><Link to="/" className="hover:text-white transition-colors">Trang chá»§</Link></li>
+                <li><Link to="/services" className="hover:text-white transition-colors">Dá»‹ch vá»¥</Link></li>
+                <li><Link to="/login" className="hover:text-white transition-colors">ÄÄƒng nháº­p</Link></li>
+                <li><Link to="/register" className="hover:text-white transition-colors">ÄÄƒng kĂ½</Link></li>
               </ul>
             </div>
             <div>
@@ -267,17 +267,17 @@ const Home = () => {
               </ul>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Legal</h4>
+              <h4 className="text-white font-semibold mb-4">PhĂ¡p lĂ½</h4>
               <ul className="space-y-2">
-                <li><Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-                <li><Link to="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link></li>
-                <li><Link to="/refund-policy" className="hover:text-white transition-colors">Refund Policy</Link></li>
-                <li><Link to="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
+                <li><Link to="/privacy-policy" className="hover:text-white transition-colors">ChĂ­nh sĂ¡ch báº£o máº­t</Link></li>
+                <li><Link to="/terms-of-service" className="hover:text-white transition-colors">Äiá»u khoáº£n dá»‹ch vá»¥</Link></li>
+                <li><Link to="/refund-policy" className="hover:text-white transition-colors">ChĂ­nh sĂ¡ch hoĂ n tiá»n</Link></li>
+                <li><Link to="/contact" className="hover:text-white transition-colors">LiĂªn há»‡</Link></li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-800 mt-12 pt-8 text-center">
-            <p>&copy; 2025 SMM Panel. All rights reserved.</p>
+            <p>&copy; 2025 á»ªnAm SHOP. Báº£n quyá»n thuá»™c vá» á»ªnAm SHOP.</p>
           </div>
         </div>
       </footer>

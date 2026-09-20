@@ -47,13 +47,13 @@ const Dashboard = () => {
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      pending: { variant: 'warning', label: 'Pending' },
-      processing: { variant: 'info', label: 'Processing' },
-      in_progress: { variant: 'info', label: 'In Progress' },
-      completed: { variant: 'success', label: 'Completed' },
-      partial: { variant: 'warning', label: 'Partial' },
-      cancelled: { variant: 'danger', label: 'Cancelled' },
-      refunded: { variant: 'danger', label: 'Refunded' },
+      pending: { variant: 'warning', label: 'Đang chờ' },
+      processing: { variant: 'info', label: 'Đang xử lý' },
+      in_progress: { variant: 'info', label: 'Đang tiến hành' },
+      completed: { variant: 'success', label: 'Hoàn thành' },
+      partial: { variant: 'warning', label: 'Một phần' },
+      cancelled: { variant: 'danger', label: 'Đã hủy' },
+      refunded: { variant: 'danger', label: 'Hoàn tiền' },
     };
 
     const config = statusConfig[status] || { variant: 'default', label: status };
@@ -61,15 +61,15 @@ const Dashboard = () => {
   };
 
   const columns = [
-    { key: '_id', title: 'Order ID', render: (id) => `#${id.slice(-8)}` },
+    { key: '_id', title: 'Mã đơn', render: (id) => `#${id.slice(-8)}` },
     {
       key: 'service',
-      title: 'Service',
+      title: 'Dịch vụ',
       render: (_, row) => row.service?.title || 'N/A',
     },
-    { key: 'quantity', title: 'Quantity' },
-    { key: 'amount', title: 'Amount', render: (amount) => `₹${amount.toFixed(2)}` },
-    { key: 'status', title: 'Status', render: (status) => getStatusBadge(status) },
+    { key: 'quantity', title: 'Số lượng' },
+    { key: 'amount', title: 'Số tiền', render: (amount) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(amount || 0)) },
+    { key: 'status', title: 'Trạng thái', render: (status) => getStatusBadge(status) },
   ];
 
   if (loading) return <PageLoader />;
@@ -79,35 +79,35 @@ const Dashboard = () => {
       {/* Welcome */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">
-          Welcome back, {user?.name}!
+          Chào mừng trở lại, {user?.name}!
         </h1>
         <p className="text-gray-500 mt-1">
-          Here's what's happening with your orders today.
+          Đây là tình hình đơn hàng của bạn hôm nay.
         </p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard
-          title="Wallet Balance"
-          value={`₹${user?.walletBalance?.toFixed(2) || '0.00'}`}
+          title="Số dư ví"
+          value={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(user?.walletBalance || 0))}
           icon={HiOutlineCreditCard}
           color="primary"
         />
         <StatCard
-          title="Total Orders"
+          title="Tổng đơn"
           value={stats.totalOrders}
           icon={HiOutlineShoppingCart}
           color="info"
         />
         <StatCard
-          title="Pending Orders"
+          title="Đơn chờ xử lý"
           value={stats.pendingOrders}
           icon={HiOutlineClock}
           color="warning"
         />
         <StatCard
-          title="Completed Orders"
+          title="Đơn hoàn thành"
           value={stats.completedOrders}
           icon={HiOutlineClipboardList}
           color="success"
@@ -121,16 +121,16 @@ const Dashboard = () => {
           className="bg-primary-600 text-white rounded-xl p-6 hover:bg-primary-700 transition-colors"
         >
           <HiOutlineShoppingCart className="w-8 h-8 mb-3" />
-          <h3 className="text-lg font-semibold">Place New Order</h3>
-          <p className="text-primary-100 mt-1">Order SMM services quickly</p>
+          <h3 className="text-lg font-semibold">Đặt đơn mới</h3>
+          <p className="text-primary-100 mt-1">Đặt dịch vụ SMM nhanh chóng</p>
         </Link>
         <Link
           to="/add-funds"
           className="bg-green-600 text-white rounded-xl p-6 hover:bg-green-700 transition-colors"
         >
           <HiOutlineCreditCard className="w-8 h-8 mb-3" />
-          <h3 className="text-lg font-semibold">Add Funds</h3>
-          <p className="text-green-100 mt-1">Top up your wallet balance</p>
+          <h3 className="text-lg font-semibold">Nạp tiền</h3>
+          <p className="text-green-100 mt-1">Nạp tiền vào ví của bạn</p>
         </Link>
       </div>
 
@@ -149,7 +149,7 @@ const Dashboard = () => {
         <Table
           columns={columns}
           data={orders}
-          emptyMessage="No orders yet. Place your first order!"
+          emptyMessage="Chưa có đơn hàng nào. Hãy đặt đơn đầu tiên!"
         />
       </Card>
     </div>

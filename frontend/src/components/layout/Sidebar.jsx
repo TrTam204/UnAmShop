@@ -21,20 +21,20 @@ const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
 
   const userMenuItems = [
-    { path: '/dashboard', icon: HiOutlineHome, label: 'Dashboard' },
-    { path: '/new-order', icon: HiOutlineShoppingCart, label: 'New Order' },
-    { path: '/orders', icon: HiOutlineClipboardList, label: 'Order History' },
-    { path: '/my-services', icon: HiOutlineCollection, label: 'Services' },
-    { path: '/add-funds', icon: HiOutlineCreditCard, label: 'Add Funds' },
-    { path: '/profile', icon: HiOutlineUser, label: 'Profile' },
+    { path: '/dashboard', icon: HiOutlineHome, label: 'Bảng điều khiển' },
+    { path: '/new-order', icon: HiOutlineShoppingCart, label: 'Đơn mới' },
+    { path: '/orders', icon: HiOutlineClipboardList, label: 'Lịch sử đơn' },
+    { path: '/my-services', icon: HiOutlineCollection, label: 'Dịch vụ' },
+    { path: '/add-funds', icon: HiOutlineCreditCard, label: 'Nạp tiền' },
+    { path: '/profile', icon: HiOutlineUser, label: 'Hồ sơ' },
   ];
 
   const adminMenuItems = [
-    { path: '/admin', icon: HiOutlineViewGrid, label: 'Dashboard' },
-    { path: '/admin/orders', icon: HiOutlineClipboardList, label: 'All Orders' },
-    { path: '/admin/services', icon: HiOutlineCollection, label: 'Manage Services' },
-    { path: '/admin/users', icon: HiOutlineUsers, label: 'Manage Users' },
-    { path: '/admin/add-funds', icon: HiOutlineCash, label: 'Add Funds' },
+    { path: '/admin', icon: HiOutlineViewGrid, label: 'Bảng điều khiển' },
+    { path: '/admin/orders', icon: HiOutlineClipboardList, label: 'Tất cả đơn' },
+    { path: '/admin/services', icon: HiOutlineCollection, label: 'Quản lý dịch vụ' },
+    { path: '/admin/users', icon: HiOutlineUsers, label: 'Quản lý người dùng' },
+    { path: '/admin/add-funds', icon: HiOutlineCash, label: 'Nạp tiền' },
   ];
 
   const menuItems = isAdmin ? adminMenuItems : userMenuItems;
@@ -67,7 +67,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold">S</span>
             </div>
-            <span className="text-xl font-bold">SMM Panel</span>
+            <span className="text-xl font-bold">ỪnAm SHOP</span>
           </Link>
           <button
             className="lg:hidden text-gray-400 hover:text-white"
@@ -79,11 +79,11 @@ const Sidebar = ({ isOpen, onClose }) => {
 
         {/* User info */}
         <div className="px-6 py-4 border-b border-gray-700">
-          <p className="text-sm text-gray-400">Welcome,</p>
+          <p className="text-sm text-gray-400">Xin chào,</p>
           <p className="font-semibold truncate">{user?.name}</p>
           {!isAdmin && (
             <p className="text-sm text-primary-400 mt-1">
-              Balance: ₹{user?.walletBalance?.toFixed(2) || '0.00'}
+              Số dư: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(user?.walletBalance || 0))}
             </p>
           )}
         </div>
@@ -118,7 +118,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-dark-100 hover:text-white rounded-lg transition-colors mb-2"
             >
               <HiOutlineUser className="w-5 h-5" />
-              <span>User Panel</span>
+              <span>Trang người dùng</span>
             </Link>
           )}
           {user?.role === 'admin' && !isAdmin && (
@@ -127,7 +127,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-dark-100 hover:text-white rounded-lg transition-colors mb-2"
             >
               <HiOutlineCog className="w-5 h-5" />
-              <span>Admin Panel</span>
+              <span>Trang quản trị</span>
             </Link>
           )}
           <button
@@ -135,7 +135,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             className="flex items-center space-x-3 px-4 py-3 w-full text-gray-300 hover:bg-red-600 hover:text-white rounded-lg transition-colors"
           >
             <HiOutlineLogout className="w-5 h-5" />
-            <span>Logout</span>
+            <span>Đăng xuất</span>
           </button>
         </div>
       </aside>

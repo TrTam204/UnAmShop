@@ -31,13 +31,13 @@ const AdminDashboard = () => {
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      pending: { variant: 'warning', label: 'Pending' },
-      processing: { variant: 'info', label: 'Processing' },
-      in_progress: { variant: 'info', label: 'In Progress' },
-      completed: { variant: 'success', label: 'Completed' },
-      partial: { variant: 'warning', label: 'Partial' },
-      cancelled: { variant: 'danger', label: 'Cancelled' },
-      refunded: { variant: 'danger', label: 'Refunded' },
+      pending: { variant: 'warning', label: 'Đang chờ' },
+      processing: { variant: 'info', label: 'Đang xử lý' },
+      in_progress: { variant: 'info', label: 'Đang tiến hành' },
+      completed: { variant: 'success', label: 'Hoàn thành' },
+      partial: { variant: 'warning', label: 'Một phần' },
+      cancelled: { variant: 'danger', label: 'Đã hủy' },
+      refunded: { variant: 'danger', label: 'Hoàn tiền' },
     };
 
     const config = statusConfig[status] || { variant: 'default', label: status };
@@ -47,27 +47,27 @@ const AdminDashboard = () => {
   const columns = [
     {
       key: '_id',
-      title: 'Order ID',
+      title: 'Mã đơn',
       render: (id) => <span className="font-mono text-xs">#{id.slice(-8)}</span>,
     },
     {
       key: 'user',
-      title: 'User',
+      title: 'Người dùng',
       render: (_, row) => row.user?.name || 'N/A',
     },
     {
       key: 'service',
-      title: 'Service',
+      title: 'Dịch vụ',
       render: (_, row) => row.service?.title || 'N/A',
     },
     {
       key: 'amount',
-      title: 'Amount',
-      render: (amount) => `₹${amount.toFixed(2)}`,
+      title: 'Số tiền',
+      render: (amount) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(amount || 0)),
     },
     {
       key: 'status',
-      title: 'Status',
+      title: 'Trạng thái',
       render: (status) => getStatusBadge(status),
     },
   ];
@@ -77,38 +77,38 @@ const AdminDashboard = () => {
   return (
     <div className="fade-in">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-        <p className="text-gray-500 mt-1">Overview of your SMM Panel</p>
+        <h1 className="text-2xl font-bold text-gray-900">Bảng điều khiển quản trị</h1>
+        <p className="text-gray-500 mt-1">Tổng quan về ỪnAm SHOP</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         <StatCard
-          title="Total Users"
+          title="Tổng người dùng"
           value={stats?.users?.total || 0}
           icon={HiOutlineUsers}
           color="primary"
         />
         <StatCard
-          title="Total Orders"
+          title="Tổng đơn"
           value={stats?.orders?.total || 0}
           icon={HiOutlineShoppingCart}
           color="info"
         />
         <StatCard
-          title="Pending Orders"
+          title="Đơn chờ xử lý"
           value={stats?.orders?.pending || 0}
           icon={HiOutlineClock}
           color="warning"
         />
         <StatCard
-          title="Total Revenue"
-          value={`₹${stats?.revenue?.total?.toFixed(2) || '0.00'}`}
+          title="Doanh thu"
+          value={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(stats?.revenue?.total || 0))}
           icon={HiOutlineCash}
           color="success"
         />
         <StatCard
-          title="Active Services"
+          title="Dịch vụ hoạt động"
           value={stats?.services?.active || 0}
           icon={HiOutlineCollection}
           color="primary"
@@ -122,55 +122,55 @@ const AdminDashboard = () => {
           className="p-4 bg-white rounded-xl border border-gray-200 hover:shadow-md transition-shadow"
         >
           <HiOutlineShoppingCart className="w-8 h-8 text-primary-600 mb-2" />
-          <h3 className="font-semibold">View Orders</h3>
-          <p className="text-sm text-gray-500">Manage all orders</p>
+          <h3 className="font-semibold">Xem đơn</h3>
+          <p className="text-sm text-gray-500">Quản lý tất cả đơn hàng</p>
         </Link>
         <Link
           to="/admin/services"
           className="p-4 bg-white rounded-xl border border-gray-200 hover:shadow-md transition-shadow"
         >
           <HiOutlineCollection className="w-8 h-8 text-green-600 mb-2" />
-          <h3 className="font-semibold">Manage Services</h3>
-          <p className="text-sm text-gray-500">Add or edit services</p>
+          <h3 className="font-semibold">Quản lý dịch vụ</h3>
+          <p className="text-sm text-gray-500">Thêm hoặc chỉnh sửa dịch vụ</p>
         </Link>
         <Link
           to="/admin/users"
           className="p-4 bg-white rounded-xl border border-gray-200 hover:shadow-md transition-shadow"
         >
           <HiOutlineUsers className="w-8 h-8 text-blue-600 mb-2" />
-          <h3 className="font-semibold">Manage Users</h3>
-          <p className="text-sm text-gray-500">View and edit users</p>
+          <h3 className="font-semibold">Quản lý người dùng</h3>
+          <p className="text-sm text-gray-500">Xem và chỉnh sửa người dùng</p>
         </Link>
         <Link
           to="/admin/add-funds"
           className="p-4 bg-white rounded-xl border border-gray-200 hover:shadow-md transition-shadow"
         >
           <HiOutlineCash className="w-8 h-8 text-yellow-600 mb-2" />
-          <h3 className="font-semibold">Add Funds</h3>
-          <p className="text-sm text-gray-500">Manual fund addition</p>
+          <h3 className="font-semibold">Nạp tiền</h3>
+          <p className="text-sm text-gray-500">Nạp tiền thủ công</p>
         </Link>
       </div>
 
       {/* Today's Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <Card title="Today's Stats">
+        <Card title="Thống kê hôm nay">
           <div className="grid grid-cols-2 gap-4">
             <div className="text-center p-4 bg-primary-50 rounded-lg">
-              <p className="text-sm text-gray-600">Orders Today</p>
+              <p className="text-sm text-gray-600">Đơn hôm nay</p>
               <p className="text-2xl font-bold text-primary-600">
                 {stats?.orders?.today || 0}
               </p>
             </div>
             <div className="text-center p-4 bg-green-50 rounded-lg">
-              <p className="text-sm text-gray-600">Revenue Today</p>
+              <p className="text-sm text-gray-600">Doanh thu hôm nay</p>
               <p className="text-2xl font-bold text-green-600">
-                ₹{stats?.revenue?.today?.toFixed(2) || '0.00'}
+                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(stats?.revenue?.today || 0))}
               </p>
             </div>
           </div>
         </Card>
 
-        <Card title="Orders by Status">
+        <Card title="Đơn theo trạng thái">
           <div className="space-y-3">
             {stats?.orders?.byStatus?.map((item) => (
               <div key={item._id} className="flex items-center justify-between">
@@ -189,14 +189,14 @@ const AdminDashboard = () => {
         title="Recent Orders"
         action={
           <Link to="/admin/orders" className="text-sm text-primary-600 hover:underline">
-            View All
+            Xem tất cả
           </Link>
         }
       >
         <Table
           columns={columns}
           data={stats?.recentOrders || []}
-          emptyMessage="No recent orders"
+          emptyMessage="Chưa có đơn gần đây"
         />
       </Card>
     </div>

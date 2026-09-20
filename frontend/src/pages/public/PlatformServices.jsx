@@ -204,9 +204,9 @@ const PlatformServices = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Platform Not Found</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Không tìm thấy nền tảng</h1>
           <Link to="/services" className="text-primary-600 hover:underline">
-            View All Services
+            Xem tất cả dịch vụ
           </Link>
         </div>
       </div>
@@ -222,7 +222,7 @@ const PlatformServices = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link to="/" className="text-2xl font-bold text-primary-600">SMM Panel</Link>
+              <Link to="/" className="text-2xl font-bold text-primary-600">ỪnAm SHOP</Link>
             </div>
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
@@ -230,7 +230,7 @@ const PlatformServices = () => {
                   to="/dashboard"
                   className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors"
                 >
-                  Dashboard
+                  Bảng điều khiển
                 </Link>
               ) : (
                 <>
@@ -238,13 +238,13 @@ const PlatformServices = () => {
                     to="/login"
                     className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
                   >
-                    Login
+                    Đăng nhập
                   </Link>
                   <Link
                     to="/register"
                     className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors"
                   >
-                    Get Started
+                    Bắt đầu
                   </Link>
                 </>
               )}
@@ -258,7 +258,7 @@ const PlatformServices = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/services" className="inline-flex items-center text-white/70 hover:text-white mb-4">
             <HiArrowLeft className="w-5 h-5 mr-2" />
-            All Services
+            Tất cả dịch vụ
           </Link>
           <div className="flex items-center gap-4 mb-4">
             <Icon className="w-12 h-12" />
@@ -275,24 +275,24 @@ const PlatformServices = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <div className="bg-white rounded-xl p-6 shadow-sm">
             <HiOutlineLightningBolt className="w-8 h-8 text-yellow-500 mb-3" />
-            <h3 className="font-semibold text-gray-900 mb-1">Instant Start</h3>
-            <p className="text-gray-500 text-sm">Orders start within minutes of payment</p>
+            <h3 className="font-semibold text-gray-900 mb-1">Bắt đầu ngay</h3>
+            <p className="text-gray-500 text-sm">Đơn hàng bắt đầu trong vài phút sau khi thanh toán</p>
           </div>
           <div className="bg-white rounded-xl p-6 shadow-sm">
             <HiOutlineShieldCheck className="w-8 h-8 text-green-500 mb-3" />
-            <h3 className="font-semibold text-gray-900 mb-1">High Quality</h3>
-            <p className="text-gray-500 text-sm">Premium quality with real engagement</p>
+            <h3 className="font-semibold text-gray-900 mb-1">Chất lượng cao</h3>
+            <p className="text-gray-500 text-sm">Chất lượng premium với tương tác thực</p>
           </div>
           <div className="bg-white rounded-xl p-6 shadow-sm">
             <HiOutlineClock className="w-8 h-8 text-blue-500 mb-3" />
-            <h3 className="font-semibold text-gray-900 mb-1">24/7 Support</h3>
-            <p className="text-gray-500 text-sm">Round the clock customer support</p>
+            <h3 className="font-semibold text-gray-900 mb-1">Hỗ trợ 24/7</h3>
+            <p className="text-gray-500 text-sm">Hỗ trợ khách hàng mọi lúc mọi nơi</p>
           </div>
         </div>
 
         {/* Available Services */}
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Available Services</h2>
-        <p className="text-gray-500 mb-6">Choose from our range of {config.name} services</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Dịch vụ có sẵn</h2>
+        <p className="text-gray-500 mb-6">Chọn trong danh sách dịch vụ {config.name} của chúng tôi</p>
 
         <div className="mb-8">
           <div className="flex flex-wrap gap-2 mb-6">
@@ -314,9 +314,9 @@ const PlatformServices = () => {
           </div>
         ) : services.length === 0 ? (
           <div className="bg-white rounded-xl p-12 text-center shadow-sm">
-            <p className="text-gray-500 text-lg mb-4">No {config.name} services available yet.</p>
+            <p className="text-gray-500 text-lg mb-4">Hiện chưa có dịch vụ {config.name} nào.</p>
             <Link to="/services" className="text-primary-600 hover:underline">
-              Browse All Services
+              Xem tất cả dịch vụ
             </Link>
           </div>
         ) : (
@@ -340,16 +340,16 @@ const PlatformServices = () => {
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <div className="text-2xl font-bold text-primary-600">
-                        ₹{service.pricePerUnit}
+                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(service.pricePerUnit || 0))}
                       </div>
-                      <div className="text-gray-500 text-sm">per 1000</div>
+                      <div className="text-gray-500 text-sm">mỗi 1000</div>
                     </div>
                     <button
                       onClick={() => handleOrder(service._id)}
                       className="flex items-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
                     >
                       <HiOutlineShoppingCart className="w-5 h-5" />
-                      Order
+                      Đặt đơn
                     </button>
                   </div>
                 </div>
@@ -362,12 +362,12 @@ const PlatformServices = () => {
       {/* CTA */}
       <div className={`${config.bgColor} text-white py-12 mt-12`}>
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-2xl font-bold mb-4">Ready to grow your {config.name}?</h2>
+          <h2 className="text-2xl font-bold mb-4">Sẵn sàng tăng trưởng {config.name} của bạn?</h2>
           <Link
             to={isAuthenticated ? '/new-order' : '/register'}
             className="inline-block bg-white text-gray-900 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
           >
-            Get Started Now
+            Bắt đầu ngay
           </Link>
         </div>
       </div>
@@ -375,7 +375,7 @@ const PlatformServices = () => {
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p>&copy; 2025 SMM Panel. All rights reserved.</p>
+          <p>&copy; 2025 ỪnAm SHOP. Bản quyền thuộc về ỪnAm SHOP.</p>
         </div>
       </footer>
     </div>

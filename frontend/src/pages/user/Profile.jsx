@@ -26,9 +26,9 @@ const Profile = () => {
     try {
       const response = await authAPI.updateProfile(profileData);
       updateUser(response.data.data);
-      toast.success('Profile updated successfully');
+      toast.success('Cập nhật hồ sơ thành công');
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Failed to update profile');
+      toast.error(error.response?.data?.error || 'Cập nhật hồ sơ thất bại');
     } finally {
       setLoading(false);
     }
@@ -38,12 +38,12 @@ const Profile = () => {
     e.preventDefault();
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error('Mật khẩu không khớp');
       return;
     }
 
     if (passwordData.newPassword.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      toast.error('Mật khẩu phải có ít nhất 6 ký tự');
       return;
     }
 
@@ -54,14 +54,14 @@ const Profile = () => {
         currentPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword,
       });
-      toast.success('Password updated successfully');
+      toast.success('Cập nhật mật khẩu thành công');
       setPasswordData({
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
       });
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Failed to update password');
+      toast.error(error.response?.data?.error || 'Cập nhật mật khẩu thất bại');
     } finally {
       setPasswordLoading(false);
     }
@@ -70,13 +70,13 @@ const Profile = () => {
   return (
     <div className="fade-in max-w-3xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
-        <p className="text-gray-500 mt-1">Manage your account settings</p>
+        <h1 className="text-2xl font-bold text-gray-900">Hồ sơ</h1>
+        <p className="text-gray-500 mt-1">Quản lý cài đặt tài khoản của bạn</p>
       </div>
 
       <div className="space-y-6">
         {/* Account Info */}
-        <Card title="Account Information">
+        <Card title="Thông tin tài khoản">
           <div className="mb-6">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 bg-primary-500 rounded-full flex items-center justify-center">
@@ -94,7 +94,7 @@ const Profile = () => {
 
           <form onSubmit={handleProfileUpdate} className="space-y-4">
             <Input
-              label="Full Name"
+              label="Họ và tên"
               value={profileData.name}
               onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
               required
@@ -103,19 +103,19 @@ const Profile = () => {
               label="Email"
               value={user?.email}
               disabled
-              helperText="Email cannot be changed"
+              helperText="Email không thể thay đổi"
             />
             <Button type="submit" loading={loading}>
-              Update Profile
+              Cập nhật hồ sơ
             </Button>
           </form>
         </Card>
 
         {/* Change Password */}
-        <Card title="Change Password">
+        <Card title="Đổi mật khẩu">
           <form onSubmit={handlePasswordUpdate} className="space-y-4">
             <Input
-              label="Current Password"
+              label="Mật khẩu hiện tại"
               type="password"
               value={passwordData.currentPassword}
               onChange={(e) =>
@@ -124,7 +124,7 @@ const Profile = () => {
               required
             />
             <Input
-              label="New Password"
+              label="Mật khẩu mới"
               type="password"
               value={passwordData.newPassword}
               onChange={(e) =>
@@ -133,7 +133,7 @@ const Profile = () => {
               required
             />
             <Input
-              label="Confirm New Password"
+              label="Xác nhận mật khẩu mới"
               type="password"
               value={passwordData.confirmPassword}
               onChange={(e) =>
@@ -142,26 +142,26 @@ const Profile = () => {
               required
             />
             <Button type="submit" loading={passwordLoading}>
-              Update Password
+              Cập nhật mật khẩu
             </Button>
           </form>
         </Card>
 
         {/* Account Stats */}
-        <Card title="Account Statistics">
+        <Card title="Thống kê tài khoản">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-500">Wallet Balance</p>
+              <p className="text-sm text-gray-500">Số dư ví</p>
               <p className="text-xl font-bold text-primary-600">
-                ₹{user?.walletBalance?.toFixed(2) || '0.00'}
+                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(user?.walletBalance || 0))}
               </p>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-500">Account Type</p>
-              <p className="text-xl font-bold capitalize">{user?.role}</p>
+              <p className="text-sm text-gray-500">Loại tài khoản</p>
+              <p className="text-xl font-bold capitalize">{user?.role === 'admin' ? 'Quản trị' : 'Người dùng'}</p>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-500">Member Since</p>
+              <p className="text-sm text-gray-500">Thành viên từ</p>
               <p className="text-xl font-bold">
                 {new Date(user?.createdAt).toLocaleDateString()}
               </p>
