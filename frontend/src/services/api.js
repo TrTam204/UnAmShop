@@ -1,7 +1,4 @@
-import axios from 'axios';
 import { supabase } from '../lib/supabase';
-
-const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 export const formatWalletBalance = (value) => {
   if (value === null || value === undefined) {
@@ -10,51 +7,6 @@ export const formatWalletBalance = (value) => {
 
   return `${new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 }).format(Number(value))} ₫`;
 };
-
-const api = axios.create({
-  baseURL: API_URL,
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Request interceptor
-api.interceptors.request.use(
-  (config) => {
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// Response interceptor
-api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    // Handle network errors or storage access errors gracefully
-    if (!error.response) {
-      console.warn('Network error or request blocked:', error.message);
-      return Promise.reject(error);
-    }
-    
-    // Don't redirect on 401 for public pages/endpoints
-    const publicPaths = ['/', '/services', '/login', '/register', '/privacy-policy', '/terms-of-service', '/refund-policy', '/contact'];
-    const isPublicPage = publicPaths.some(path => 
-      window.location.pathname === path || window.location.pathname.startsWith('/services/')
-    );
-    const isPublicEndpoint = error.config?.url?.includes('/auth/me') || 
-                             error.config?.url?.includes('/services');
-    
-    if (error.response?.status === 401 && !isPublicEndpoint && !isPublicPage) {
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
-);
 
 const normalizeAuthUser = (sessionUser, profile = null) => {
   const userMeta = sessionUser?.user_metadata || {};
@@ -305,8 +257,6 @@ export const servicesAPI = {
       },
     };
   },
-  getById: (id) => api.get(`/services/${id}`),
-  getCategories: () => api.get('/services/categories'),
 };
 
 // Orders API
@@ -344,7 +294,6 @@ export const ordersAPI = {
       },
     };
   },
-  getById: (id) => api.get(`/orders/${id}`),
   getAllAdmin: async ({ page = 1, limit = 30, status = null } = {}) => {
     const result = await supabaseAdminAPI.listOrders({
       status: status || null,
@@ -361,7 +310,6 @@ export const ordersAPI = {
       },
     };
   },
-  getStats: () => api.get('/orders/admin/stats'),
   updateStatus: () => {
     throw new Error('Không hỗ trợ cập nhật trạng thái đơn hàng trực tiếp qua frontend. Vui lòng dùng RPC an toàn trên admin side.');
   },
@@ -450,11 +398,6 @@ const getSupabaseWalletSnapshot = async () => {
 };
 
 export const walletAPI = {
-  getBalance: () => api.get('/wallet/balance'),
-  getHistory: (params) => api.get('/wallet/history', { params }),
-  createPaymentOrder: (amount) => api.post('/wallet/add-funds', { amount }),
-  verifyPayment: (data) => api.post('/wallet/verify-payment', data),
-  getAllTransactions: (params) => api.get('/wallet/admin/transactions', { params }),
   getSupabaseSnapshot: getSupabaseWalletSnapshot,
   createDepositRequest: async (amountVnd, paymentMethod) => {
     await requireSupabaseSession();
@@ -518,7 +461,6 @@ export const adminAPI = {
       },
     };
   },
-  getUser: (id) => api.get(`/admin/users/${id}`),
 };
 
 const callAdminSupabaseRpc = async (name, args = {}) => {
@@ -689,5 +631,3 @@ export const supabaseAdminAPI = {
   }),
   getDashboardStats: () => callAdminSupabaseRpc('admin_dashboard_stats'),
 };
-
-export default api;

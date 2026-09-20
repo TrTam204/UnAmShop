@@ -12,3 +12,5 @@ npm-debug.log*
 *.swo
 coverage/
 .nyc_output/
+
+.kilo/
